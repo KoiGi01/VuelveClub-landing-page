@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>VuelveClub — Tarjetas de lealtad digitales para tu negocio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Hanken+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="icon" type="image/png" href="assets/logo-mark.png" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div class="shell">
+  <div class="card">
+
+    <!-- ===================== HEADER ===================== -->
+    <header class="head wrap">
+      <a href="#" class="logo"><img class="logo-mark" src="assets/logo-mark.png" alt="" /><span class="word">vuelveclub<span class="dot">.</span></span></a>
+      <a href="#demo" class="btn btn-primary" data-magnetic>Solicitar demo</a>
+    </header>
+
+    <!-- ===================== HERO ===================== -->
+    <section class="hero wrap">
+      <div class="hero-copy">
+        <span class="hero-eyebrow"><span class="pulse"></span>Lealtad digital · sin app que descargar</span>
+        <h1>
+          <span class="ln">El cartoncito</span>
+          <span class="ln">de sellos se pierde.</span>
+          <span class="ln">El celular, <mark>nunca</mark>.</span>
+        </h1>
+        <p class="sub">Cambia tu tarjeta de lealtad de papel por una digital que vive en Apple&nbsp;Wallet y Google&nbsp;Wallet. Pegas un sello NFC en el mostrador, tu cliente acerca el cel, y el sello se llena solito.</p>
+
+        <form class="signup" data-demo>
+          <div class="field">
+            <input type="email" placeholder="tu@negocio.com" aria-label="Correo" required />
+            <button type="submit" class="btn btn-lime">Solicitar demo</button>
+          </div>
+        </form>
+        <p class="signup-note">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M20 6 9 17l-5-5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Demo gratis · sin tarjeta de crédito · respondemos hoy mismo
+        </p>
+
+        <div class="compat">
+          <span class="label">Funciona con lo que ya usan tus clientes</span>
+          <div class="compat-row">
+            <span class="compat-logo"><svg viewBox="0 0 24 24" fill="none"><rect x="2" y="6" width="20" height="13" rx="3" stroke="currentColor" stroke-width="1.8"/><path d="M2 10h20" stroke="currentColor" stroke-width="1.8"/></svg>Google&nbsp;Wallet</span>
+            <span class="compat-logo"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="4" stroke="currentColor" stroke-width="1.8"/><circle cx="17" cy="12" r="1.6" fill="currentColor"/></svg>Apple&nbsp;Wallet</span>
+            <span class="compat-logo"><svg viewBox="0 0 24 24" fill="none"><path d="M6 8a8 8 0 0 1 0 8M10 5.5a13 13 0 0 1 0 13M14 8a8 8 0 0 1 0 8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>NFC</span>
+            <span class="compat-logo" style="font-weight:700;font-style:italic;font-size:18px">Stripe</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phone stage -->
+      <div class="hero-visual">
+        <div class="phone-stage">
+          <div class="phone-halo" id="halo"></div>
+          <div class="phone">
+            <div class="notch"></div>
+            <div class="phone-screen">
+              <div id="wallet"></div>
+              <div class="confetti-layer" id="confetti"></div>
+            </div>
+          </div>
+        </div>
+        <div class="biz-dots" id="bizDots"></div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ===================== ANTES / DESPUÉS ===================== -->
+    <section class="section wrap" id="comparacion">
+      <div class="section-head center reveal">
+        <span class="label">Papel vs. digital</span>
+        <h2>La misma clienta. Dos finales distintos.</h2>
+        <p>Una tarjeta de papel se rompe, se moja, se queda en otro pantalón. Una digital siempre trae diez de diez.</p>
+      </div>
+
+      <div class="vs reveal">
+        <div class="vs-col vs-antes">
+          <span class="tag">● Con tarjeta de papel</span>
+          <h3>"Ya iba en el nueve…"</h3>
+          <p class="desc">El cartoncito se le perdió. Otra vez. Y con él, las ganas de regresar a tu mostrador.</p>
+          <ul class="vs-points">
+            <li><svg viewBox="0 0 24 24" fill="none"><path d="M18 6 6 18M6 6l12 12" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>Se pierde, se rompe, se olvida</li>
+            <li><svg viewBox="0 0 24 24" fill="none"><path d="M18 6 6 18M6 6l12 12" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>No sabes quién es tu cliente</li>
+            <li><svg viewBox="0 0 24 24" fill="none"><path d="M18 6 6 18M6 6l12 12" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>Cero forma de hacerlo volver</li>
+          </ul>
+          <img class="char" src="assets/char-antes.png" alt="Clienta frustrada con su tarjeta de papel rota" />
+        </div>
+
+        <div class="vs-col vs-despues">
+          <span class="tag">● Con VuelveClub</span>
+          <h3>"¡Diez de diez, café gratis!"</h3>
+          <p class="desc">Su tarjeta vive en el celular. No se pierde, le avisa cuando pasa cerca, y vuelve por su premio.</p>
+          <ul class="vs-points">
+            <li><svg viewBox="0 0 24 24" fill="none"><path d="M20 6 9 17l-5-5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Siempre en la cartera del celular</li>
+            <li><svg viewBox="0 0 24 24" fill="none"><path d="M20 6 9 17l-5-5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Sabes quién vuelve y cada cuánto</li>
+            <li><svg viewBox="0 0 24 24" fill="none"><path d="M20 6 9 17l-5-5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Le mandas un recordatorio y regresa</li>
+          </ul>
+          <img class="char" src="assets/char-despues.png" alt="Clienta feliz con su tarjeta digital completa" />
+        </div>
+
+        <div class="vs-mid">VS</div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ===================== MÉTRICAS ===================== -->
+    <section class="section wrap" id="metricas">
+      <div class="section-head reveal">
+        <span class="label">Por qué funciona</span>
+        <h2>Retener cuesta menos que conseguir.</h2>
+        <p>Los números de la lealtad bien hecha. No es magia, es que la gente vuelve a donde la hacen sentir vista.</p>
+      </div>
+
+      <div class="metrics-layout reveal">
+        <div class="stats">
+        <div class="stat feature" data-viz>
+          <div class="stat-viz">
+            <div class="viz-ring">
+              <svg viewBox="0 0 100 100"><circle class="track" cx="50" cy="50" r="42"></circle><circle class="prog" cx="50" cy="50" r="42"></circle></svg>
+            </div>
+          </div>
+          <span class="stat-tag">Retención</span>
+          <div class="num"><span data-to="67" data-dec="0">0</span><span class="unit">%</span></div>
+          <p class="stat-label">de los clientes con tarjeta regresan dentro del mes</p>
+        </div>
+
+        <div class="stat" data-viz>
+          <div class="stat-viz">
+            <div class="viz-spread">
+              <span class="seed"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" fill="currentColor"/><path d="M4 20c0-4 3.5-6 8-6s8 2 8 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></span>
+              <span class="dots"><i></i><i></i><i></i><i></i><i></i></span>
+            </div>
+          </div>
+          <span class="stat-tag">Boca en boca</span>
+          <div class="num"><span data-to="5" data-dec="0">0</span><span class="unit">×</span></div>
+          <p class="stat-label">más recomendaciones de clientes leales</p>
+        </div>
+
+        <div class="stat" data-viz>
+          <div class="stat-viz">
+            <div class="viz-bars"><i style="--h:34%"></i><i style="--h:50%"></i><i style="--h:63%"></i><i style="--h:80%"></i><i style="--h:100%"></i></div>
+          </div>
+          <span class="stat-tag">Ticket promedio</span>
+          <div class="num">+<span data-to="25" data-dec="0">0</span><span class="unit">%</span></div>
+          <p class="stat-label">gastan más quienes coleccionan sellos</p>
+        </div>
+
+        <div class="stat" data-viz>
+          <div class="stat-viz">
+            <div class="viz-ratio">
+              <div class="row"><span class="rl">Conseguir</span><span class="bar big"></span></div>
+              <div class="row"><span class="rl">Retener</span><span class="bar small"></span></div>
+            </div>
+          </div>
+          <span class="stat-tag">Costo</span>
+          <div class="num"><span data-to="10" data-dec="0">0</span><span class="unit">×</span></div>
+          <p class="stat-label">más barato retener que conseguir un cliente nuevo</p>
+        </div>
+        </div>
+        <figure class="metrics-char">
+          <img src="assets/char-stats.png" alt="Asesora de VuelveClub presentando los resultados" />
+        </figure>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ===================== QUÉ INCLUYE ===================== -->
+    <section class="section wrap" id="features">
+      <div class="section-head center reveal">
+        <span class="label">Qué incluye</span>
+        <h2>Todo lo que necesitas para que vuelvan.</h2>
+        <p>Un solo plan. Todas las herramientas. Sin módulos que se cobran aparte.</p>
+      </div>
+
+      <div class="feature-grid reveal">
+        <div class="feat">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none"><path d="M6 8a8 8 0 0 1 0 8M10 5.5a13 13 0 0 1 0 13M14 8a8 8 0 0 1 0 8M18 5.5a13 13 0 0 1 0 13" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg></div>
+          <h3>Sello NFC físico</h3>
+          <p>Pegas el sello en el mostrador. El cliente acerca el cel y se actualiza al instante.</p>
+        </div>
+        <div class="feat">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="6" width="18" height="12" rx="3" stroke="currentColor" stroke-width="1.9"/><path d="M3 10h18" stroke="currentColor" stroke-width="1.9"/></svg></div>
+          <h3>Apple &amp; Google Wallet</h3>
+          <p>La tarjeta vive donde tu cliente ya tiene sus boletos y tarjetas. Sin descargar nada.</p>
+        </div>
+        <div class="feat">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none"><path d="M12 21s7-5.5 7-11a7 7 0 1 0-14 0c0 5.5 7 11 7 11Z" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/><circle cx="12" cy="10" r="2.4" stroke="currentColor" stroke-width="1.9"/></svg></div>
+          <h3>Geofencing</h3>
+          <p>Le llega un aviso al celular cuando pasa cerca de tu negocio. "Tu café favorito a 200&nbsp;m."</p>
+        </div>
+        <div class="feat">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 8 3 8H3s3-1 3-8Z" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/><path d="M10 20a2 2 0 0 0 4 0" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg></div>
+          <h3>Notificaciones automáticas</h3>
+          <p>"Te falta un sello", "tu premio caduca el viernes". Recordatorios que sí regresan gente.</p>
+        </div>
+        <div class="feat">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none"><path d="M20 12v8H4v-8M2 7h20v5H2zM12 20V7M12 7S11 3 8.5 3 5 4.5 5 5.5 6 7 8 7M12 7s1-4 3.5-4S19 4.5 19 5.5 18 7 16 7" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg></div>
+          <h3>Recompensas configurables</h3>
+          <p>Tú decides: cada 10 sellos un café, 2x1 los martes, lo que tu negocio necesite.</p>
+        </div>
+        <div class="feat">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="16" rx="2.5" stroke="currentColor" stroke-width="1.9"/><path d="M7 14l3-3 2.5 2.5L17 9" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <h3>Dashboard de retención</h3>
+          <p>Quién vuelve, cada cuánto, cuánto gasta. Tus clientes dejan de ser un misterio.</p>
+        </div>
+        <div class="feat">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none"><path d="M3 11 21 3l-8 18-2-7-8-3Z" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/></svg></div>
+          <h3>Campañas</h3>
+          <p>Manda promos a quienes no han venido en un mes. Reactiva clientes con un clic.</p>
+        </div>
+        <div class="feat">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.9"/><path d="M4 20c0-4 3.5-6 8-6s8 2 8 6" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg></div>
+          <h3>Onboarding incluido</h3>
+          <p>Te dejamos todo listo y le enseñamos a tu equipo. En una tarde estás operando.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== PRICING ===================== -->
+    <section class="section wrap" id="precio">
+      <div class="pricing-band reveal">
+        <div class="pricing-inner">
+          <div class="pricing-left">
+            <span class="label">Un precio. Sin letras chiquitas.</span>
+            <h2>Todo incluido por sucursal.</h2>
+            <p>Sin tiers confusos, sin "eso se cobra aparte". El sello NFC, los clientes ilimitados, el Wallet, el geofencing y el dashboard. Todo.</p>
+            <div class="price-row">
+              <span class="amt">$349</span>
+              <span class="per">MXN / mes<br />por sucursal</span>
+            </div>
+            <p class="price-sub">// cancela cuando quieras · sin permanencia</p>
+            <a href="#demo" class="btn btn-lime" data-magnetic>Solicitar demo gratis</a>
+            <div class="pricing-trust">
+              <span><svg viewBox="0 0 24 24" fill="none"><path d="M20 6 9 17l-5-5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Facturamos</span>
+              <span><svg viewBox="0 0 24 24" fill="none"><path d="M20 6 9 17l-5-5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Soporte por WhatsApp</span>
+              <span><svg viewBox="0 0 24 24" fill="none"><path d="M20 6 9 17l-5-5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Datos en México</span>
+            </div>
+          </div>
+          <div class="pricing-right">
+            <p class="incl-title">Incluye, sin costo extra</p>
+            <ul class="incl">
+              <li><span class="chk"><svg viewBox="0 0 24 24" fill="none"><path d="M20 6 9 17l-5-5" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Sello NFC físico para el mostrador</li>
+              <li><span class="chk"><svg viewBox="0 0 24 24" fill="none"><path d="M20 6 9 17l-5-5" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Clientes ilimitados</li>
+              <li><span class="chk"><svg viewBox="0 0 24 24" fill="none"><path d="M20 6 9 17l-5-5" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Tarjeta en Apple &amp; Google Wallet</li>
+              <li><span class="chk"><svg viewBox="0 0 24 24" fill="none"><path d="M20 6 9 17l-5-5" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Geofencing y notificaciones</li>
+              <li><span class="chk"><svg viewBox="0 0 24 24" fill="none"><path d="M20 6 9 17l-5-5" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Dashboard y campañas</li>
+              <li><span class="chk"><svg viewBox="0 0 24 24" fill="none"><path d="M20 6 9 17l-5-5" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Onboarding y soporte</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== DEMO / CTA ===================== -->
+    <section class="section wrap" id="demo">
+      <div class="cta reveal">
+        <div class="cta-left">
+          <span class="label">Solicita tu demo</span>
+          <h2>¿Listo para que vuelvan?</h2>
+          <p>Déjanos tus datos y te montamos una tarjeta de prueba con el branding de tu negocio. Sin compromiso.</p>
+          <form class="demo-form" data-demo>
+            <div class="demo-row">
+              <input type="text" placeholder="Tu nombre" aria-label="Nombre" required />
+              <input type="text" placeholder="Tu negocio" aria-label="Negocio" required />
+            </div>
+            <div class="demo-row">
+              <input type="email" placeholder="Correo" aria-label="Correo" required />
+              <input type="tel" placeholder="WhatsApp" aria-label="WhatsApp" />
+            </div>
+            <select aria-label="Tipo de negocio">
+              <option value="">¿Qué tipo de negocio tienes?</option>
+              <option>Cafetería</option>
+              <option>Barbería / estética</option>
+              <option>Pizzería / restaurante</option>
+              <option>Gimnasio</option>
+              <option>Otro</option>
+            </select>
+            <button type="submit" class="btn btn-primary">Quiero mi demo gratis</button>
+          </form>
+        </div>
+        <div class="cta-right">
+          <img src="assets/char-presenter.png" alt="Clienta mostrando su tarjeta digital de VuelveClub" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== FOOTER ===================== -->
+    <footer class="foot wrap">
+      <div class="foot-top">
+        <div class="foot-brand">
+          <a href="#" class="logo"><img class="logo-mark" src="assets/logo-mark.png" alt="" /><span class="word">vuelveclub<span class="dot">.</span></span></a>
+          <p>Tarjetas de lealtad digitales para negocios que quieren que sus clientes vuelvan. Hecho en México.</p>
+        </div>
+        <div class="foot-cols">
+          <div class="foot-col">
+            <h4>Producto</h4>
+            <a href="#features">Qué incluye</a>
+            <a href="#metricas">Resultados</a>
+            <a href="#precio">Precio</a>
+            <a href="#comparacion">Papel vs. digital</a>
+          </div>
+          <div class="foot-col">
+            <h4>Negocios</h4>
+            <a href="#demo">Cafeterías</a>
+            <a href="#demo">Barberías</a>
+            <a href="#demo">Restaurantes</a>
+            <a href="#demo">Gimnasios</a>
+          </div>
+          <div class="foot-col">
+            <h4>Contacto</h4>
+            <a href="#demo">Solicitar demo</a>
+            <a href="#">WhatsApp</a>
+            <a href="#">hola@vuelveclub.mx</a>
+          </div>
+        </div>
+      </div>
+      <div class="foot-bottom">
+        <p>© 2026 VuelveClub · Todos los derechos reservados</p>
+        <p class="made">// tip: escribe "vuelve" en cualquier parte ✦</p>
+      </div>
+    </footer>
+
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
