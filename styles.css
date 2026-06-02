@@ -190,6 +190,7 @@ mark { background: linear-gradient(180deg, transparent 58%, var(--lime) 58%); co
 .hero h1 {
   font-size: clamp(44px, 5vw, 74px);
   margin-bottom: 22px;
+  text-wrap: balance;
 }
 .hero h1 .ln { display: block; }
 .hero p.sub {
@@ -212,7 +213,7 @@ mark { background: linear-gradient(180deg, transparent 58%, var(--lime) 58%); co
   padding: 4px 5px 4px 20px;
   transition: border-color .2s, box-shadow .2s;
 }
-.signup .field:focus-within { border-color: var(--ink); box-shadow: 0 0 0 4px rgba(203,222,42,.35); }
+.signup .field:focus-within { border-color: var(--ink); box-shadow: 0 0 0 4px rgba(203,222,42,.5); }
 .signup input {
   flex: 1; border: none; background: transparent; outline: none;
   font-family: var(--font-body); font-size: 16px; color: var(--ink); min-width: 0;
@@ -582,7 +583,7 @@ mark { background: linear-gradient(180deg, transparent 58%, var(--lime) 58%); co
 @media (max-width: 1080px) {
   :root { --pad-x: 44px; }
   .hero { grid-template-columns: 1fr; gap: 10px; }
-  .phone-stage { min-height: 520px; order: -1; }
+  .phone-stage { min-height: 440px; order: -1; }
   .hero p.sub { max-width: 46ch; }
   .pricing-inner { grid-template-columns: 1fr; }
   .cta { grid-template-columns: 1fr; padding-left: 0; }
@@ -608,4 +609,17 @@ mark { background: linear-gradient(180deg, transparent 58%, var(--lime) 58%); co
   .feature-grid { grid-template-columns: 1fr; }
   .demo-row { grid-template-columns: 1fr; }
   .foot-top { flex-direction: column; }
+}
+
+/* ---------- Reduced motion: respect OS preference ---------- */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+  }
+  .hero-eyebrow .pulse { animation: none; }
+  .confetti-layer { display: none; }
+  .js .reveal { opacity: 1; transform: none; }
 }
