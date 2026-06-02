@@ -8,10 +8,10 @@ A single-page marketing landing site for **VuelveClub**, a digital loyalty-card 
 
 ## Running / developing
 
-For pure markup/style/animation work, open [VuelveClub.html](VuelveClub.html) directly, or serve over HTTP so relative paths and `IntersectionObserver` animations behave like production:
+For pure markup/style/animation work, open [index.html](index.html) directly, or serve over HTTP so relative paths and `IntersectionObserver` animations behave like production:
 
 ```powershell
-python -m http.server 8000   # http://localhost:8000/VuelveClub.html  — does NOT run /api
+python -m http.server 8000   # http://localhost:8000/  — does NOT run /api
 ```
 
 To exercise the lead form end-to-end you need the serverless function, which only runs under Vercel:
@@ -30,9 +30,9 @@ There is no lint or test tooling; verify visually in the browser and by submitti
 
 ## Architecture
 
-Three top-level files, loaded in this order — `VuelveClub.html` links `styles.css` then `app.js` at the end of `<body>`:
+Three top-level files, loaded in this order — `index.html` links `styles.css` then `app.js` at the end of `<body>`:
 
-- **[VuelveClub.html](VuelveClub.html)** — all markup. One `.shell > .card` wrapper containing sections in fixed order: header, hero (`#`), comparación, métricas, features, precio, demo, footer. Inline SVGs are used for all icons. Section anchors (`#demo`, `#features`, etc.) are the nav targets.
+- **[index.html](index.html)** — all markup (served at `/`; Vercel uses it as the site root). One `.shell > .card` wrapper containing sections in fixed order: header, hero (`#`), comparación, métricas, features, precio, demo, footer. Inline SVGs are used for all icons. Section anchors (`#demo`, `#features`, etc.) are the nav targets.
 - **[styles.css](styles.css)** — all styling. Design tokens live in `:root` (CSS custom properties): the cream/ink/lime/plum palette, radii, the three font families (Fredoka display, Hanken Grotesk body, DM Mono labels), and shadows. Change colors and spacing through these variables rather than hardcoding.
 - **[app.js](app.js)** — all behavior, wrapped in one IIFE. Adds `.js` to `<html>` on load (CSS keys progressive enhancement off this).
 
