@@ -35,18 +35,28 @@
           </div>
           <p class="form-error" role="alert" hidden></p>
         </form>
+        <a href="#features" class="btn btn-ghost hero-secondary">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M8 5v14l11-7z" fill="currentColor"/></svg>
+          Ver cómo funciona
+        </a>
         <p class="signup-note">
           <svg viewBox="0 0 24 24" fill="none"><path d="M20 6 9 17l-5-5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
           Desde $349 MXN/mes por sucursal · sin tarjeta de crédito · respondemos hoy mismo
         </p>
 
-        <div class="compat">
-          <span class="label">Funciona con lo que ya usan tus clientes</span>
-          <div class="compat-row">
-            <span class="compat-logo"><svg viewBox="0 0 24 24" fill="none"><rect x="2" y="6" width="20" height="13" rx="3" stroke="currentColor" stroke-width="1.8"/><path d="M2 10h20" stroke="currentColor" stroke-width="1.8"/></svg>Google&nbsp;Wallet</span>
-            <span class="compat-logo"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="4" stroke="currentColor" stroke-width="1.8"/><circle cx="17" cy="12" r="1.6" fill="currentColor"/></svg>Apple&nbsp;Wallet</span>
-            <span class="compat-logo"><svg viewBox="0 0 24 24" fill="none"><path d="M6 8a8 8 0 0 1 0 8M10 5.5a13 13 0 0 1 0 13M14 8a8 8 0 0 1 0 8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>NFC</span>
-          </div>
+        <div class="hero-chips">
+          <span class="chip">
+            <span class="chip-ic"><svg viewBox="0 0 24 24" fill="none"><rect x="7" y="2.5" width="10" height="19" rx="2.6" stroke="currentColor" stroke-width="1.8"/><path d="M10.5 18.5h3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
+            Sin app
+          </span>
+          <span class="chip">
+            <span class="chip-ic"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="6" width="18" height="12" rx="3" stroke="currentColor" stroke-width="1.8"/><path d="M3 10h18" stroke="currentColor" stroke-width="1.8"/></svg></span>
+            Apple &amp; Google Wallet
+          </span>
+          <span class="chip">
+            <span class="chip-ic"><svg viewBox="0 0 24 24" fill="none"><path d="M4 9.5 5.2 4.5h13.6L20 9.5M4 9.5v9.5a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V9.5M4 9.5a2.4 2.4 0 0 0 4 0 2.4 2.4 0 0 0 4 0 2.4 2.4 0 0 0 4 0 2.4 2.4 0 0 0 4 0" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg></span>
+            Ideal para negocios locales
+          </span>
         </div>
       </div>
 
@@ -54,11 +64,52 @@
       <div class="hero-visual">
         <div class="phone-stage">
           <div class="phone-halo" id="halo"></div>
+
+          <!-- floating stat cards -->
+          <div class="stat-float sf-1 reveal">
+            <span class="sf-ic"><svg viewBox="0 0 24 24" fill="none"><path d="M21 12a9 9 0 1 1-3.2-6.9" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M21 5v4h-4" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            <div class="sf-num">67<span class="sf-u">%</span></div>
+            <div class="sf-label">Retención<br/>de clientes con tarjeta activa</div>
+            <span class="sf-up">↑ 18% vs. mes anterior</span>
+          </div>
+
+          <div class="stat-float sf-2 reveal">
+            <span class="sf-ic"><svg viewBox="0 0 24 24" fill="none"><circle cx="9" cy="8" r="3.2" stroke="currentColor" stroke-width="2"/><path d="M3.5 19c0-3 2.5-4.6 5.5-4.6S14.5 16 14.5 19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M16 6.2a3 3 0 0 1 0 5.6M17.5 19c0-2.3-1-3.8-2.6-4.4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span>
+            <div class="sf-num">1.248</div>
+            <div class="sf-label">Visitas repetidas<br/>este mes</div>
+            <span class="sf-up">↑ 24% vs. mes anterior</span>
+          </div>
+
+          <div class="stat-float sf-3 reveal">
+            <span class="sf-ic"><svg viewBox="0 0 24 24" fill="none"><path d="M6 9a6 6 0 0 1 12 0c0 6 2.5 7 2.5 7H3.5S6 15 6 9Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M10 20a2 2 0 0 0 4 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span>
+            <div class="sf-num">92<span class="sf-u">%</span></div>
+            <div class="sf-label">Notificaciones<br/>entregadas</div>
+            <span class="sf-up">↑ 36% más aperturas</span>
+          </div>
+
+          <div class="stat-float sf-4 reveal">
+            <span class="sf-ic"><svg viewBox="0 0 24 24" fill="none"><path d="M4 20V11M9.3 20V7M14.7 20v-6M20 20V4" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></span>
+            <div class="sf-num"><span class="sf-plus">+</span>25<span class="sf-u">%</span></div>
+            <div class="sf-label">Ticket promedio<br/>vs. clientes nuevos</div>
+            <span class="sf-up">↑ 12% vs. mes anterior</span>
+          </div>
+
           <div class="phone">
-            <div class="notch"></div>
+            <div class="island"></div>
             <div class="phone-screen">
+              <div class="status-bar">
+                <span class="sb-time">9:41</span>
+                <span class="sb-icons">
+                  <svg viewBox="0 0 24 24" fill="none"><path d="M3 17h2v2H3zM8 13h2v6H8zM13 9h2v10h-2zM18 5h2v14h-2z" fill="currentColor"/></svg>
+                  <svg viewBox="0 0 24 24" fill="none"><path d="M12 18.5h.01M5 13a10 10 0 0 1 14 0M8 16a6 6 0 0 1 8 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                  <svg viewBox="0 0 26 24" fill="none"><rect x="2" y="8" width="18" height="9" rx="2.4" stroke="currentColor" stroke-width="1.8"/><rect x="3.6" y="9.6" width="13" height="5.8" rx="1.2" fill="currentColor"/><rect x="21" y="11" width="2" height="3" rx="1" fill="currentColor"/></svg>
+                </span>
+              </div>
               <div id="wallet"></div>
-              <div class="confetti-layer" id="confetti"></div>
+              <div class="wallet-actions">
+                <a class="wbtn wbtn-apple"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.4 12.6c0-2 1.6-2.9 1.7-3-1-1.4-2.4-1.6-2.9-1.6-1.2-.1-2.4.7-3 .7s-1.6-.7-2.6-.7c-1.3 0-2.6.8-3.2 2-1.4 2.4-.4 6 1 8 .7.9 1.4 2 2.5 1.9 1-.04 1.4-.6 2.6-.6s1.5.6 2.6.6 1.7-.9 2.4-1.8c.7-1 1-2 1-2-.1 0-1.9-.8-1.9-2.5zM14.6 6.3c.5-.7.9-1.6.8-2.5-.8 0-1.7.5-2.3 1.2-.5.6-.9 1.5-.8 2.4.9.1 1.7-.4 2.3-1.1z"/></svg><span><small>Agregar a</small>Apple Wallet</span></a>
+                <a class="wbtn wbtn-google"><span class="gw-mini"><i style="background:#EA4335"></i><i style="background:#FBBC04"></i><i style="background:#4285F4"></i><i style="background:#34A853"></i></span><span><small>Agregar a</small>Google Wallet</span></a>
+              </div>
             </div>
           </div>
         </div>

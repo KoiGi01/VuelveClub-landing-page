@@ -1,8 +1,14 @@
 # Known issues
 
-## Mobile horizontal clipping at narrow viewports (≲400px) — open
+## Mobile horizontal clipping at narrow viewports (≲400px) — partially fixed
 
-**Symptom:** On real phone widths around 360px, the right edge of hero content
+**Update (hero fixed):** The hero columns now get `min-width: 0` in the ≤1080px media
+query, so `.hero-copy`/`h1`/`.sub`/form no longer overflow on phones, and the hero
+phone-halo is shrunk on mobile. **Remaining:** the metrics `.stats` grid still
+overflows (~412px at a 360px viewport). Same root cause/fix below; apply `min-width: 0`
+to the `.stats` grid items (and/or let the grid go single-column lower) when revisited.
+
+**Symptom (original):** On real phone widths around 360px, the right edge of hero content
 (`.hero-copy`, `h1`, `.sub`, the form) and the metrics `.stats` grid are clipped.
 It is not a document-level scroll (`.card` has `overflow: clip`, so
 `document.scrollWidth` stays == viewport), which is why it's easy to miss — the
