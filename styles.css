@@ -222,6 +222,12 @@ mark { background: linear-gradient(180deg, transparent 58%, var(--lime) 58%); co
 .signup-note { font-size: 14px; color: var(--ink-45); display: flex; align-items: center; gap: 7px; }
 .signup-note svg { width: 14px; height: 14px; color: var(--lime-deep); }
 
+/* honeypot: kept in the DOM for bots, hidden from people */
+.hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+
+/* inline form error */
+.form-error { margin-top: 10px; font-size: 14px; color: #C0392B; }
+
 /* compat strip */
 .compat { margin-top: 40px; }
 .compat .label { margin-bottom: 14px; display: block; }

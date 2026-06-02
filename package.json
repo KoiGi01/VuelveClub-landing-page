@@ -1,0 +1,10 @@
+{
+  "name": "vuelveclub",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "VuelveClub landing site with lead-acquisition endpoint",
+  "dependencies": {
+    "resend": "^4.0.0"
+  }
+}

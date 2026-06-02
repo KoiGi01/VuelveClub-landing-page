@@ -239,12 +239,51 @@
     }
   });
 
-  /* ---------- forms: no-op submit ---------- */
+  /* ---------- forms: submit to /api/lead ---------- */
   document.querySelectorAll("form[data-demo]").forEach((f) => {
-    f.addEventListener("submit", (e) => {
+    f.addEventListener("submit", async (e) => {
       e.preventDefault();
       const btn = f.querySelector("button[type=submit], .btn");
-      if (btn) { const t = btn.textContent; btn.textContent = "¡Listo! Te contactamos ✦"; btn.style.pointerEvents = "none"; setTimeout(() => { btn.textContent = t; btn.style.pointerEvents = ""; f.reset && f.reset(); }, 2600); }
+      const errEl = f.querySelector(".form-error");
+      const fd = new FormData(f);
+      const payload = {
+        source: f.dataset.source || "demo",
+        email: (fd.get("email") || "").trim(),
+        nombre: (fd.get("nombre") || "").trim(),
+        negocio: (fd.get("negocio") || "").trim(),
+        whatsapp: (fd.get("whatsapp") || "").trim(),
+        tipo: (fd.get("tipo") || "").trim(),
+        company: (fd.get("company") || "").trim()
+      };
+
+      if (errEl) { errEl.hidden = true; errEl.textContent = ""; }
+      const label = btn ? btn.textContent : "";
+      if (btn) { btn.textContent = "Enviando…"; btn.style.pointerEvents = "none"; }
+
+      try {
+        const res = await fetch("/api/lead", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok || !data.ok) throw new Error((data && data.error) || "Error");
+
+        if (btn) {
+          btn.textContent = "¡Listo! Te contactamos ✦";
+          setTimeout(() => {
+            btn.textContent = label;
+            btn.style.pointerEvents = "";
+            f.reset && f.reset();
+          }, 2600);
+        }
+      } catch (err) {
+        if (btn) { btn.textContent = label; btn.style.pointerEvents = ""; }
+        if (errEl) {
+          errEl.textContent = "No pudimos enviar tus datos. Intenta de nuevo o escríbenos por WhatsApp.";
+          errEl.hidden = false;
+        }
+      }
     });
   });
 

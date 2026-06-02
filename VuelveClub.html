@@ -31,11 +31,13 @@
         </h1>
         <p class="sub">Cambia tu tarjeta de lealtad de papel por una digital que vive en Apple&nbsp;Wallet y Google&nbsp;Wallet. Pegas un sello NFC en el mostrador, tu cliente acerca el cel, y el sello se llena solito.</p>
 
-        <form class="signup" data-demo>
+        <form class="signup" data-demo data-source="hero">
+          <input type="text" name="company" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
           <div class="field">
-            <input type="email" placeholder="tu@negocio.com" aria-label="Correo" required />
+            <input type="email" name="email" placeholder="tu@negocio.com" aria-label="Correo" required />
             <button type="submit" class="btn btn-lime">Solicitar demo</button>
           </div>
+          <p class="form-error" role="alert" hidden></p>
         </form>
         <p class="signup-note">
           <svg viewBox="0 0 24 24" fill="none"><path d="M20 6 9 17l-5-5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -266,16 +268,17 @@
           <span class="label">Solicita tu demo</span>
           <h2>¿Listo para que vuelvan?</h2>
           <p>Déjanos tus datos y te montamos una tarjeta de prueba con el branding de tu negocio. Sin compromiso.</p>
-          <form class="demo-form" data-demo>
+          <form class="demo-form" data-demo data-source="demo">
+            <input type="text" name="company" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
             <div class="demo-row">
-              <input type="text" placeholder="Tu nombre" aria-label="Nombre" required />
-              <input type="text" placeholder="Tu negocio" aria-label="Negocio" required />
+              <input type="text" name="nombre" placeholder="Tu nombre" aria-label="Nombre" required />
+              <input type="text" name="negocio" placeholder="Tu negocio" aria-label="Negocio" required />
             </div>
             <div class="demo-row">
-              <input type="email" placeholder="Correo" aria-label="Correo" required />
-              <input type="tel" placeholder="WhatsApp" aria-label="WhatsApp" />
+              <input type="email" name="email" placeholder="Correo" aria-label="Correo" required />
+              <input type="tel" name="whatsapp" placeholder="WhatsApp" aria-label="WhatsApp" />
             </div>
-            <select aria-label="Tipo de negocio">
+            <select name="tipo" aria-label="Tipo de negocio">
               <option value="">¿Qué tipo de negocio tienes?</option>
               <option>Cafetería</option>
               <option>Barbería / estética</option>
@@ -284,6 +287,7 @@
               <option>Otro</option>
             </select>
             <button type="submit" class="btn btn-primary">Quiero mi demo gratis</button>
+            <p class="form-error" role="alert" hidden></p>
           </form>
         </div>
         <div class="cta-right">
