@@ -21,6 +21,8 @@
 .auth-login-card .cl-rootBox,.auth-login-card .cl-cardBox{width:100%;max-width:100%;box-shadow:none}
 .auth-login-card .cl-card{background:transparent;padding:0;box-shadow:none;border:0}
 .auth-login-card .cl-footer{background:transparent}
+.auth-account{margin-top:24px}.admin-preview-button{margin-top:28px;justify-content:center;white-space:normal;text-align:center}
+.admin-preview-caption{font-size:12px}
 @keyframes auth-shimmer{from{background-position:150% 0}to{background-position:-70% 0}}
 @media(prefers-reduced-motion:reduce){.skeleton{animation:none}.auth-widget{transition:none}}
 @media(max-width:600px){.auth-login-card{margin-inline:auto}.auth-form-wrap{padding-inline:24px}}

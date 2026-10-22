@@ -22,6 +22,12 @@ dialog{border:1px solid var(--line);border-radius:24px;background:var(--cream);p
 /* Ritmo no longer includes the concept comparison bar. */
 .theme-ritmo .sidebar{top:0;height:100dvh}
 .theme-ritmo .workspace-header{top:0}
+.client-preview-bar{height:52px;position:sticky;top:0;z-index:70;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:0 22px;background:var(--plum);color:var(--cream);font-size:12px}
+.client-preview-bar>span{display:flex;align-items:center;gap:12px}.client-preview-bar strong{font-weight:600}.client-preview-bar>span>span{font-size:11px;opacity:.75}
+.client-preview-bar a{display:flex;align-items:center;gap:8px;font-size:12px;white-space:nowrap}.client-preview-bar .icon{width:15px;height:15px}
+.client-preview-page.theme-ritmo .sidebar{top:52px;height:calc(100dvh - 52px)}
+.client-preview-page.menu-open:after{inset:52px 0 0}
+@media(max-width:600px){.client-preview-bar{padding-inline:15px}.client-preview-bar>span{flex-direction:column;align-items:start;gap:2px}.client-preview-bar a{font-size:11px}}
 
 /* Motion follows navigation, data and physical actions. */
 #main>section,#main>.page-heading,#main>.designer-grid,#main>.counter-grid,#main>.customer-panel,#main>.devices-grid,#main>.team-panel,#main>.settings-grid{animation:enter .45s var(--ease) both}.dashboard-grid>section:nth-child(2){animation:enter .5s var(--ease) .07s both}.dashboard-grid>section:nth-child(3){animation:enter .5s var(--ease) .12s both}.dashboard-grid>section:nth-child(4){animation:enter .5s var(--ease) .17s both}@keyframes enter{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}@keyframes bar-grow{from{transform:scaleY(.03);opacity:.4}to{transform:scaleY(1);opacity:1}}@keyframes stamp-pop{0%{transform:scale(1.4) rotate(-15deg);opacity:0}60%{transform:scale(.92) rotate(4deg);opacity:1}100%{transform:scale(1) rotate(0);opacity:1}}@keyframes pass-confirm{0%,100%{transform:translateY(0)}40%{transform:translateY(-5px)}}@keyframes stamp-arrive{from{opacity:0;transform:translateY(12px) rotate(-17deg)}to{opacity:1;transform:translateY(0) rotate(-11deg)}}@keyframes orbit-in{from{opacity:0;scale:.7}to{opacity:1;scale:1}}@keyframes dialog-in{from{opacity:0;transform:translateY(12px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}@keyframes drawer-in{from{opacity:.5;transform:translateX(25px)}to{opacity:1;transform:translateX(0)}}@keyframes read-wave{0%{transform:scale(.7);opacity:0}20%{opacity:.45}100%{transform:scale(1.5);opacity:0}}

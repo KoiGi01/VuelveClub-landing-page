@@ -1,6 +1,8 @@
 (() => {
   'use strict';
   const app = document.querySelector('#app');
+  const clientPreview = new URLSearchParams(location.search).get('vista') === 'cliente';
+  const stateKey = clientPreview ? 'vc-client-preview-v1' : 'vc-prototype-v1';
   const modal = document.querySelector('#modal');
   const concepts = { pulso: 'Pulso', ritmo: 'Ritmo', mesa: 'Mesa' };
   const requested = new URLSearchParams(location.search).get('concepto') || location.pathname.split('/').filter(Boolean).at(-1);
@@ -55,7 +57,7 @@
     team: [{ id: 1, name: 'Ana Martínez', email: 'ana@example.com', role: 'Dueña', status: 'Activo' }, { id: 2, name: 'Carlos Ramos', email: 'carlos@example.com', role: 'Encargado', status: 'Activo' }, { id: 3, name: 'Elena Cruz', email: 'elena@example.com', role: 'Personal', status: 'Activo' }]
   });
   let state;
-  try { const saved = JSON.parse(sessionStorage.getItem('vc-prototype-v1')); state = saved?.version === 1 && Array.isArray(saved.customers) ? saved : seed(); } catch { state = seed(); }
+  try { const saved = JSON.parse(sessionStorage.getItem(stateKey)); state = saved?.version === 1 && Array.isArray(saved.customers) ? saved : seed(); } catch { state = seed(); }
   state.customers.forEach((c, i) => { if (c.id <= 8 && !c.phone) c.phone = `+52999000000${i + 1}`; });
   let sidebarCollapsed = false;
   try { sidebarCollapsed = sessionStorage.getItem('vc-sidebar-collapsed') === 'true'; } catch { /* Optional preference. */ }
@@ -68,17 +70,17 @@
   let toastTimer;
   let countAnimated = false;
   function closeMenu() { document.body.classList.remove('menu-open');const trigger=document.querySelector('[data-action="menu"]');if(trigger){trigger.setAttribute('aria-expanded','false');trigger.setAttribute('aria-label','Abrir navegación');trigger.innerHTML=icon('menu');} }
-  const save = () => { try { sessionStorage.setItem('vc-prototype-v1', JSON.stringify(state)); } catch { /* The prototype also works without browser storage. */ } };
+  const save = () => { try { sessionStorage.setItem(stateKey, JSON.stringify(state)); } catch { /* The prototype also works without browser storage. */ } };
   const ready = () => state.customers.reduce((sum, c) => sum + Math.floor(c.stamps / state.config.goal), 0);
   const customer = id => state.customers.find(c => c.id === Number(id)) || state.customers[0];
   const brand = (dark = concept === 'ritmo' || view === 'acceso') => `<span class="brand"><img src="/assets/${dark ? 'logo_dark-mode.png' : 'logo-mark.png'}" alt="" /><span>vuelveclub<span class="brand-dot">.</span></span></span>`;
   function toast(message) { clearTimeout(toastTimer); const el = document.querySelector('#toast'); el.textContent = message; el.classList.add('visible'); toastTimer = setTimeout(() => el.classList.remove('visible'), 4000); }
   function go(next) { if (view === next) { render(); return; } location.hash = next; }
-  function reviewBar() { if (concept === 'ritmo') return ''; return `<div class="review-bar"><a href="/propuestas">${icon('arrow', 'back-arrow')}<span>Propuestas</span></a><nav aria-label="Cambiar propuesta">${Object.entries(concepts).map(([key, name]) => `<a href="/propuestas/${key}" ${concept === key ? 'aria-current="page"' : ''}>${name}</a>`).join('')}</nav><span class="review-note">Prototipo · Datos de ejemplo</span><button class="reset-demo" data-action="reset" aria-label="Restablecer datos de ejemplo" title="Restablecer datos">${icon('refresh')}</button></div>`; }
+  function reviewBar() { if (clientPreview) return `<div class="client-preview-bar"><span><strong>Vista de cliente</strong><span>Negocio de ejemplo</span></span><a href="/iniciar-sesion">Volver a mi cuenta ${icon('arrow')}</a></div>`; if (concept === 'ritmo') return ''; return `<div class="review-bar"><a href="/propuestas">${icon('arrow', 'back-arrow')}<span>Propuestas</span></a><nav aria-label="Cambiar propuesta">${Object.entries(concepts).map(([key, name]) => `<a href="/propuestas/${key}" ${concept === key ? 'aria-current="page"' : ''}>${name}</a>`).join('')}</nav><span class="review-note">Prototipo · Datos de ejemplo</span><button class="reset-demo" data-action="reset" aria-label="Restablecer datos de ejemplo" title="Restablecer datos">${icon('refresh')}</button></div>`; }
   function navLinks() { return nav.map(([key, glyph, label]) => `<a href="#${key}" title="${label}" aria-label="${label}" class="nav-item ${view === key ? 'active' : ''}" ${view === key ? 'aria-current="page"' : ''}>${icon(glyph)}<span>${label}</span>${key === 'clientes' ? `<span class="nav-count">${state.customers.length}</span>` : ''}</a>`).join(''); }
   function render() {
     if (![...nav.map(x => x[0]), 'mostrador', 'acceso'].includes(view)) view = 'inicio';
-    document.body.className = `app-page theme-${concept} ${view === 'acceso' ? 'access-page' : ''} ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`;
+    document.body.className = `app-page theme-${concept} ${clientPreview ? 'client-preview-page' : ''} ${view === 'acceso' ? 'access-page' : ''} ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`;
     document.title = `${concepts[concept]} · ${view === 'inicio' ? 'Inicio' : view === 'acceso' ? 'Acceso' : nav.find(x => x[0] === view)?.[2] || 'Mostrador'} | VuelveClub`;
     if (view === 'acceso') { location.replace('https://app.vuelveclub.com/iniciar-sesion'); return; }
     app.innerHTML = `${reviewBar()}<div class="app-layout"><aside class="sidebar" id="sidebar"><div class="sidebar-brand-row"><a href="#inicio" aria-label="VuelveClub, inicio">${brand()}</a><button class="icon-button sidebar-toggle" data-action="collapse-sidebar" aria-label="${sidebarCollapsed ? 'Expandir' : 'Colapsar'} barra lateral" title="${sidebarCollapsed ? 'Expandir' : 'Colapsar'} barra lateral" aria-expanded="${!sidebarCollapsed}" aria-controls="sidebar">${icon(sidebarCollapsed ? 'expand' : 'collapse')}</button></div><button class="business-switch" data-action="business" aria-label="Ver negocio: ${esc(state.business)}" title="${esc(state.business)}">${icon('coffee')}<span><strong>${esc(state.business)}</strong><small>${esc(state.branch)}</small></span>${icon('down')}</button><span class="nav-label">Tu negocio</span><nav class="main-nav" aria-label="Navegación principal">${navLinks()}</nav><a class="counter-link ${view === 'mostrador' ? 'active' : ''}" href="#mostrador" aria-label="Mostrador" title="Mostrador">${icon('scan')}<span>Mostrador</span>${icon('arrow')}</a><div class="sidebar-bottom"><a href="/soporte" target="_blank" rel="noopener" aria-label="Centro de ayuda" title="Centro de ayuda">${icon('help')}<span>Centro de ayuda</span>${icon('arrow')}</a><button class="profile" data-action="account" aria-label="Cuenta de Ana Martínez" title="Cuenta de Ana Martínez"><span class="avatar lavender">AM</span><span><strong>Ana Martínez</strong><small>Administradora</small></span>${icon('down')}</button></div></aside><div class="workspace"><header class="workspace-header"><button class="icon-button mobile-menu" data-action="menu" aria-label="Abrir navegación" aria-controls="sidebar" aria-expanded="false">${icon('menu')}</button><div class="header-actions"><button class="search-trigger" data-action="search" aria-label="Buscar cliente" aria-keyshortcuts="/">${icon('search')}<span>Buscar cliente</span><kbd>/</kbd></button><button class="icon-button notifications" data-action="activity" aria-label="Ver actividad reciente">${icon('bell')}<i></i></button><button class="header-avatar avatar lavender" data-action="account" aria-label="Cuenta de Ana Martínez">AM</button></div></header><main id="main" tabindex="-1">${page()}</main><footer class="workspace-footer"><span>${icon('heart')}Que sigan volviendo.</span><span>${esc(state.branch)} · Mérida, Yucatán</span></footer></div></div>`;

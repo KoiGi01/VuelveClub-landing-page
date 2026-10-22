@@ -72,9 +72,30 @@ Before opening customer business workspaces:
 - Connect business records in Supabase, with tenant authorization and RLS policies.
 - Protect APIs with verified Clerk sessions. A browser-only redirect is not access control.
 
-After successful Clerk authentication the page shows the signed-in account with
-Clerk's UserButton; it does not redirect into or claim to secure the prototype
-workspace. The existing proposal routes still contain public example data only.
+After successful Clerk authentication the page obtains a session token and calls
+GET /api/session. The server verifies its RS256 signature against the production
+Clerk JWKS, issuer, lifetime, session ID and authorized origin. Pending sessions
+are rejected. Responses are never cached. No email or role sent by the browser
+can grant access.
+
+VUELVE_ADMIN_USER_IDS is a server-only, comma-separated allowlist of immutable
+production Clerk user IDs. Only configured users receive the application admin
+role and the "Ver dashboard como cliente" button. This does not grant access to
+the Clerk management console. Keep this policy server-side when adding future
+admin endpoints; hiding a button alone is not authorization.
+
+The button opens /propuestas/ritmo?vista=cliente, with an explicit example-data
+banner and a link back to the account. This is a preview of a business dashboard,
+not impersonation of an actual customer. It retains the Clerk session and uses
+separate sessionStorage (vc-client-preview-v1), leaving the normal prototype
+state untouched. The proposal routes still contain public example data only.
+Ordinary members see their signed-in account and the pending-business-access
+message until onboarding and tenant data are implemented.
+
+Role tests use real generated RSA keys and signed tokens to cover admin/member
+policy, forged claims, tampering, expiry, invalid origin/issuer, pending sessions
+and unauthenticated requests. Browser UI checks use a Clerk test double; they do
+not establish completion of a real user's production sign-in.
 
 Loading regression verification: delayed configuration and delayed mounting;
 network, SDK and mount failures with successful retries; deadline expiry and late

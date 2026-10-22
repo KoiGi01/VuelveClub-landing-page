@@ -99,11 +99,39 @@
       }), signal);
       signal.throwIfAborted();
       if (window.Clerk.isSignedIn) {
+        const token = await abortable(window.Clerk.session.getToken(), signal);
+        const sessionResponse = await fetch('/api/session', {
+          headers: { Authorization: `Bearer ${token}` }, signal
+        });
+        if (!sessionResponse.ok) throw new Error('Unavailable');
+        const session = await sessionResponse.json();
+        signal.throwIfAborted();
         const message = document.createElement('p');
         message.className = 'auth-intro';
-        message.textContent = 'Ya iniciaste sesión. Estamos preparando el acceso a tu negocio.';
+        message.textContent = session.role === 'admin'
+          ? 'Revisa la experiencia de tus negocios desde tu cuenta.'
+          : 'Ya iniciaste sesión. Estamos preparando el acceso a tu negocio.';
+        if (session.role === 'admin') {
+          const label = document.createElement('span');
+          label.className = 'eyebrow';
+          label.textContent = 'Tu cuenta de administrador';
+          const heading = document.createElement('h2');
+          heading.textContent = 'Qué gusto tenerte aquí.';
+          widget.append(label, heading);
+        }
         const account = document.createElement('div');
+        account.className = 'auth-account';
         widget.append(message, account);
+        if (session.role === 'admin' && session.canPreview) {
+          const preview = document.createElement('a');
+          preview.className = 'button button-dark admin-preview-button';
+          preview.href = '/propuestas/ritmo?vista=cliente';
+          preview.textContent = 'Ver dashboard como cliente';
+          const caption = document.createElement('p');
+          caption.className = 'auth-intro admin-preview-caption';
+          caption.textContent = 'Explora el negocio de ejemplo. Tu sesión de administrador se mantiene.';
+          widget.append(preview, caption);
+        }
         unmount = () => window.Clerk.unmountUserButton(account);
         window.Clerk.mountUserButton(account);
       } else {
