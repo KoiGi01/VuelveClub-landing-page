@@ -3,6 +3,10 @@
     { "source": "/support", "destination": "/soporte", "permanent": true }
   ],
   "rewrites": [
-    { "source": "/soporte", "destination": "/soporte.html" }
+    { "source": "/soporte", "destination": "/soporte.html" },
+    { "source": "/propuestas", "destination": "/propuestas/index.html" },
+    { "source": "/propuestas/pulso", "destination": "/propuestas/plataforma.html" },
+    { "source": "/propuestas/ritmo", "destination": "/propuestas/plataforma.html" },
+    { "source": "/propuestas/mesa", "destination": "/propuestas/plataforma.html" }
   ]
 }
