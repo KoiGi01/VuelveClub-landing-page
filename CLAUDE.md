@@ -24,9 +24,10 @@ vercel dev         # serves static files + /api/lead together
 Env vars (copy `.env.example` → `.env` for local `vercel dev`; set the same in the Vercel project for production):
 - `RESEND_API_KEY` — required, the Resend key.
 - `LEAD_TO_EMAIL` — recipient (default `luismedlozn@gmail.com`; will become `hola@vuelveclub.com`).
+- `SUPPORT_TO_EMAIL` — recipient for support tickets (default `luismedlozn@gmail.com`).
 - `LEAD_FROM_EMAIL` — sender (default `onboarding@resend.dev` until `vuelveclub.com` is verified in Resend).
 
-There is no lint or test tooling; verify visually in the browser and by submitting the forms under `vercel dev`.
+Run `npm test` for support endpoint checks (email delivery is mocked). Verify the layout in the browser and submit the forms under `vercel dev` for end-to-end email checks.
 
 ## Architecture
 
@@ -48,6 +49,8 @@ Three top-level files, loaded in this order — `index.html` links `styles.css` 
 
 Vercel Node serverless function (ESM — `package.json` has `"type": "module"`). Validates input, drops honeypot hits silently (200, no email), and emails the lead via Resend. Returns `{ ok: true }` / `{ ok: false, error }`. No database — leads exist only as email; persistence/autoresponder are deliberately out of scope (see the design spec). Holds no secrets; all config via the env vars above.
 - Easter egg: typing `vuelve` anywhere instantly fills the card (`fillAll`).
+
+`soporte.html` is available at `/soporte` through `vercel.json`; `/support` redirects there. The homepage footer links to it. `support.css` extends the shared design tokens and `support.js` handles form validation and loading/success/error states. Its ticket form posts to `api/support.js`, which sends support requests via Resend to `SUPPORT_TO_EMAIL` and sets the customer email as `replyTo`. Failed submissions preserve the form contents. Deploy the repository to the existing Vercel project to publish these routes; a static HTTP server does not implement the rewrites or API.
 
 ## Assets
 

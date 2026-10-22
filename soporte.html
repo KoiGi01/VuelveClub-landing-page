@@ -1,0 +1,84 @@
+﻿<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="¿Necesitas ayuda con VuelveClub? Envíanos tu consulta sobre tarjetas digitales, sellos o tu negocio y te responderemos por correo." />
+  <title>Soporte para clientes — VuelveClub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Hanken+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="icon" type="image/png" href="assets/favicon.png" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="support.css" />
+  <script src="support.js" defer></script>
+</head>
+<body class="support-page">
+  <a class="skip-link" href="#contenido">Ir al contenido</a>
+  <div class="shell">
+    <div class="card">
+      <header class="head wrap">
+        <a class="logo" href="/" aria-label="VuelveClub, inicio"><img class="logo-mark" src="assets/logo-mark.png" alt="" /><span class="word">vuelveclub<span class="dot">.</span></span></a>
+        <a class="support-back" href="/">Volver al inicio <span aria-hidden="true">↗</span></a>
+      </header>
+
+      <main id="contenido" class="support-main wrap">
+        <div class="support-copy">
+          <span class="label">Centro de soporte</span>
+          <h1>Estamos para <mark>ayudarte.</mark></h1>
+          <p class="support-intro">Tu próxima visita debería ser fácil. Si algo no salió como esperabas, cuéntanos y lo revisamos contigo.</p>
+          <div class="support-note">
+            <span class="support-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M4 5h16v11H9l-5 4V5Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M8 9h8M8 12h5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>
+            <div><h2>Para clientes y negocios</h2><p>Tarjetas en Wallet, sellos, recompensas o ayuda con tu negocio. Te responderemos al correo que nos compartas.</p></div>
+          </div>
+
+          <section class="support-faq" aria-labelledby="faq-title">
+            <h2 id="faq-title">Antes de escribirnos</h2>
+            <details>
+              <summary>¿Necesito descargar una app?</summary>
+              <p>No. Tu tarjeta de VuelveClub vive en Apple Wallet o Google Wallet. Puedes abrirla desde la app Wallet de tu teléfono.</p>
+            </details>
+            <details>
+              <summary>¿Qué información incluyo en mi solicitud?</summary>
+              <p>Cuéntanos qué intentabas hacer, qué ocurrió y en qué negocio. Si el problema es con tu tarjeta, indica si usas iPhone o Android y cuándo ocurrió.</p>
+            </details>
+            <details>
+              <summary>Quiero VuelveClub para mi negocio</summary>
+              <p><a href="/#demo">Solicita una demo</a> y cuéntanos sobre tu negocio. Si ya usas VuelveClub y necesitas ayuda, envíanos una solicitud aquí.</p>
+            </details>
+          </section>
+        </div>
+
+        <section class="support-panel" aria-labelledby="form-title">
+          <span class="label">Cuéntanos qué pasó</span>
+          <h2 id="form-title">Enviar una solicitud</h2>
+          <p class="support-form-intro">Los campos son obligatorios, salvo donde se indique.</p>
+          <form id="support-form" aria-describedby="form-note">
+            <input class="hp" type="text" name="company" tabindex="-1" autocomplete="off" aria-hidden="true" />
+            <div class="support-row">
+              <div><label for="nombre">Tu nombre</label><input id="nombre" name="nombre" autocomplete="name" maxlength="120" required /></div>
+              <div><label for="email">Correo electrónico</label><input id="email" name="email" type="email" autocomplete="email" maxlength="254" required /></div>
+            </div>
+            <label for="negocio">Nombre del negocio <span>(opcional)</span></label>
+            <input id="negocio" name="negocio" autocomplete="organization" maxlength="160" />
+            <label for="asunto">Asunto</label>
+            <input id="asunto" name="asunto" maxlength="160" placeholder="Ej. No aparece un sello en mi tarjeta" required />
+            <label for="mensaje">¿Cómo podemos ayudarte?</label>
+            <textarea id="mensaje" name="mensaje" maxlength="5000" rows="5" aria-describedby="message-hint" required></textarea>
+            <p class="support-hint" id="message-hint">Incluye los pasos y lo que ocurrió. Máximo 5,000 caracteres.</p>
+            <p class="support-form-note" id="form-note">Te responderemos al correo que indiques en este formulario.</p>
+            <button type="submit" class="btn btn-lime">Enviar solicitud <span aria-hidden="true">↗</span></button>
+            <p class="support-status" role="status" aria-live="polite" aria-atomic="true"></p>
+            <noscript><p>Activa JavaScript en tu navegador para enviar la solicitud.</p></noscript>
+          </form>
+        </section>
+      </main>
+
+      <footer class="support-footer wrap">
+        <p>© 2026 VuelveClub · Hecho en México.</p>
+        <a href="/">Tarjetas que hacen que vuelvan <span aria-hidden="true">↗</span></a>
+      </footer>
+    </div>
+  </div>
+</body>
+</html>

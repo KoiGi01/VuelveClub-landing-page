@@ -1,0 +1,58 @@
+.support-page :focus-visible { outline: 3px solid var(--plum-soft); outline-offset: 4px; }
+.skip-link { position: absolute; top: -100px; left: 24px; z-index: 5; padding: 12px 20px; background: var(--ink); color: var(--paper); border-radius: var(--radius-sm); }
+.skip-link:focus { top: 12px; }
+.support-back { color: var(--ink-70); font-size: 14px; text-decoration: none; }
+.support-back:hover { color: var(--ink); text-decoration: underline; }
+.support-back span { margin-left: 8px; }
+.support-main { display: grid; grid-template-columns: .9fr 1.1fr; gap: clamp(32px, 5vw, 80px); padding-top: 48px; padding-bottom: 72px; align-items: start; }
+.support-copy, .support-panel { min-width: 0; }
+.support-copy > .label { color: var(--plum-soft); }
+.support-copy h1 { max-width: 10ch; margin-top: 20px; margin-bottom: 24px; font-size: clamp(44px, 5.2vw, 72px); line-height: 1.08; }
+.support-intro { color: var(--ink-70); max-width: 38ch; font-size: 18px; }
+.support-note { display: flex; gap: 16px; margin-top: 32px; padding: 22px; background: var(--lime-tint); border-radius: var(--radius-md); }
+.support-icon { display: grid; place-items: center; flex: 0 0 42px; height: 42px; border-radius: 50%; background: var(--lime); color: var(--plum); }
+.support-icon svg { width: 24px; height: 24px; }
+.support-note h2 { margin-bottom: 8px; font-size: 20px; }
+.support-note p { font-size: 15px; color: var(--ink-70); }
+.support-faq { margin-top: 36px; }
+.support-faq h2 { margin-bottom: 18px; font-size: 24px; }
+.support-faq details { border-bottom: 1px solid var(--line); }
+.support-faq summary { padding: 17px 4px; cursor: pointer; font-size: 16px; font-weight: 600; }
+.support-faq details p { padding: 0 4px 18px; font-size: 15px; color: var(--ink-70); }
+.support-faq a { color: var(--plum); text-underline-offset: 3px; }
+.support-panel { padding: clamp(24px, 3vw, 40px); border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--cream); }
+.support-panel > .label { color: var(--ink-70); }
+.support-panel h2 { font-size: clamp(28px, 3vw, 34px); margin-top: 10px; margin-bottom: 10px; }
+.support-form-intro { color: var(--ink-70); font-size: 14px; margin-bottom: 8px; }
+.support-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.support-row > div { min-width: 0; }
+.support-panel label { display: block; font-size: 14px; font-weight: 600; margin: 20px 0 7px; }
+.support-panel label span { color: var(--ink-70); font-weight: 400; }
+.support-panel input, .support-panel textarea { width: 100%; min-width: 0; padding: 12px 14px; border: 1px solid #ccc8be; border-radius: var(--radius-sm); background: var(--paper); color: var(--ink); font: inherit; font-size: 16px; }
+.support-panel input::placeholder { color: var(--ink-70); }
+.support-panel textarea { resize: vertical; min-height: 140px; }
+.support-hint, .support-form-note { color: var(--ink-70); font-size: 13px; }
+.support-hint { margin-top: 6px; }
+.support-form-note { margin-top: 18px; }
+.support-panel .btn { width: 100%; justify-content: center; margin-top: 22px; }
+.support-panel .btn:disabled { cursor: wait; opacity: .65; transform: none; }
+.support-status { font-size: 15px; font-weight: 500; color: var(--plum); overflow-wrap: anywhere; }
+.support-status:not(:empty) { margin-top: 16px; }
+.support-status.error { color: #a51d32; }
+.support-footer { display: flex; flex-wrap: wrap; gap: 16px; justify-content: space-between; border-top: 1px solid var(--line); padding-top: 24px; padding-bottom: 28px; color: var(--ink-70); font-size: 13px; }
+.support-footer a { color: var(--ink-70); text-decoration: none; }
+.support-footer a:hover { text-decoration: underline; }
+@media (max-width: 1000px) {
+  .support-main { grid-template-columns: 1fr; }
+  .support-copy h1 { max-width: 16ch; }
+  .support-intro { max-width: 55ch; }
+}
+@media (max-width: 480px) {
+  .support-page .head { gap: 12px; flex-wrap: wrap; }
+  .support-page .logo { font-size: 23px; }
+  .support-back { font-size: 13px; }
+  .support-main { padding-top: 24px; padding-bottom: 40px; }
+  .support-row { grid-template-columns: 1fr; gap: 0; }
+  .support-panel { padding: 22px 18px; }
+  .support-note { padding: 18px; gap: 12px; }
+}
