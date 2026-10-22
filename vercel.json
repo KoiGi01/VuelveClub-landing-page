@@ -1,9 +1,9 @@
 {
   "redirects": [
+    { "source": "/", "has": [{ "type": "host", "value": "app.vuelveclub.com" }], "destination": "/iniciar-sesion", "permanent": false },
     { "source": "/support", "destination": "/soporte", "permanent": true }
   ],
   "rewrites": [
-    { "source": "/", "has": [{ "type": "host", "value": "app.vuelveclub.com" }], "destination": "/acceso.html" },
     { "source": "/iniciar-sesion", "destination": "/acceso.html" },
     { "source": "/soporte", "destination": "/soporte.html" },
     { "source": "/propuestas", "destination": "/propuestas/index.html" },

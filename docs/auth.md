@@ -1,16 +1,15 @@
 # Business sign-in
 
-The landing links to /iniciar-sesion, a dedicated page without proposal navigation
+The landing links to https://app.vuelveclub.com/iniciar-sesion, a dedicated page without proposal navigation
 or example-panel entry points. Legacy /propuestas/*#acceso links redirect there.
 Ritmo also no longer renders the proposal comparison bar.
 
-The root of app.vuelveclub.com is configured to serve the same access page via a
-host-specific Vercel rewrite. Other domains continue serving the landing at /.
-The domain must be assigned to vuelve-club-landing-page in the lead-scoop Vercel
-team's Settings > Domains. Public DNS already uses Vercel nameservers; follow any
-verification/DNS instructions the dashboard displays. Do not change apex or www.
-After Vercel reports valid configuration, verify HTTPS, access-page assets, /api/auth-config,
-and the marketing page; then change the landing's login link to https://app.vuelveclub.com/.
+The root of app.vuelveclub.com redirects to /iniciar-sesion using a host-specific
+Vercel redirect. A root rewrite was superseded because the existing static index
+was served first. Other domains continue serving the landing at /.
+The domain is assigned to vuelve-club-landing-page in the lead-scoop Vercel team
+and verified with valid configuration. DNS uses Vercel nameservers. Apex and www
+were not changed. HTTPS and the access-page assets are verified after deployment.
 
 Clerk's prebuilt SignIn component handles credentials, recovery, MFA and OAuth.
 Clerk JS v6 and UI v1 load from the Frontend API domain encoded in the publishable
