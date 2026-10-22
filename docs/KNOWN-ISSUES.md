@@ -1,12 +1,12 @@
 # Known issues
 
-## Mobile horizontal clipping at narrow viewports (≲400px) — partially fixed
+## Mobile horizontal clipping at narrow viewports (≲400px) — resolved
 
-**Update (hero fixed):** The hero columns now get `min-width: 0` in the ≤1080px media
-query, so `.hero-copy`/`h1`/`.sub`/form no longer overflow on phones, and the hero
-phone-halo is shrunk on mobile. **Remaining:** the metrics `.stats` grid still
-overflows (~412px at a 360px viewport). Same root cause/fix below; apply `min-width: 0`
-to the `.stats` grid items (and/or let the grid go single-column lower) when revisited.
+**Update (2026-10-22):** The hero is responsive, and metrics now use one column at
+≤680px. The mobile rule explicitly targets `.metrics-layout .stats`; the older
+`.stats` selector lost to that more specific desktop rule. Grid tracks use
+`minmax(0, 1fr)` and cards have `min-width: 0`. Browser checks at 320, 360, 390,
+700, 768, 1024, 1280 and 1440px found no viewport overflow in page content.
 
 **Symptom (original):** On real phone widths around 360px, the right edge of hero content
 (`.hero-copy`, `h1`, `.sub`, the form) and the metrics `.stats` grid are clipped.
@@ -25,12 +25,8 @@ fixed-width phone (`.phone { width: 310px }`); with `--pad-x: 22px` (mobile) plu
 track expands past the viewport and the whole hero row stretches with it. The
 `.stats` grid overflows similarly.
 
-**Likely fix (not yet applied):**
-- Add `min-width: 0` to the hero grid children (`.hero-copy`, `.hero-visual`) so
-  the columns can shrink.
-- Make the phone responsive on small screens (e.g. `.phone { width: min(310px, 100%) }`
-  or scale it down in the ≤680px media query).
-- Re-check the `.stats` grid min-track sizing at ≤680px.
+**Applied fixes:** Hero grid children can shrink, the phone has `max-width: 100%`,
+and the metrics grid now applies the correct mobile selector and track sizing.
 
 **Verification note / gotcha:** headless Chrome on Windows clamps the minimum
 window width to ~476px, so `--window-size=360 --screenshot` renders at ~476px but

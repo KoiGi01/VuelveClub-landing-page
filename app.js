@@ -69,7 +69,10 @@
   }
 
   function updateDots() {
-    [...dotsWrap.children].forEach((d, i) => d.classList.toggle("active", i === bizIndex));
+    [...dotsWrap.children].forEach((d, i) => {
+      d.classList.toggle("active", i === bizIndex);
+      d.setAttribute("aria-pressed", String(i === bizIndex));
+    });
   }
 
   function renderCard() {
@@ -143,6 +146,10 @@
   function countUp(el) {
     const target = parseFloat(el.dataset.to);
     const dec = (el.dataset.dec | 0);
+    if (reduceMotion) {
+      el.textContent = target.toFixed(dec);
+      return;
+    }
     const dur = 1400;
     const start = performance.now();
     function tick(now) {
@@ -177,6 +184,7 @@
 
   /* ---------- Magnetic CTA ---------- */
   document.querySelectorAll("[data-magnetic]").forEach((btn) => {
+    if (reduceMotion) return;
     btn.addEventListener("mousemove", (e) => {
       const r = btn.getBoundingClientRect();
       const x = e.clientX - r.left - r.width / 2;
@@ -189,6 +197,11 @@
   /* ---------- Easter egg: teclea "vuelve" ---------- */
   let buf = "";
   window.addEventListener("keydown", (e) => {
+    if (e.target instanceof Element && e.target.closest("input, textarea, select, [contenteditable]")) {
+      buf = "";
+      return;
+    }
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
     if (e.key && e.key.length === 1) {
       buf = (buf + e.key.toLowerCase()).slice(-6);
       if (buf === "vuelve") { advance(); buf = ""; }
@@ -197,10 +210,19 @@
 
   /* ---------- forms: submit to /api/lead ---------- */
   document.querySelectorAll("form[data-demo]").forEach((f) => {
+    const btn = f.querySelector("button[type=submit]");
+    const errEl = f.querySelector(".form-error");
+    const statusEl = f.querySelector(".form-status");
+    f.querySelectorAll("input[required]").forEach((input) => {
+      input.addEventListener("input", () => input.setCustomValidity(""));
+    });
     f.addEventListener("submit", async (e) => {
       e.preventDefault();
-      const btn = f.querySelector("button[type=submit], .btn");
-      const errEl = f.querySelector(".form-error");
+      if (btn.disabled) return;
+      for (const input of f.querySelectorAll("input[required]")) {
+        input.setCustomValidity(input.value.trim() ? "" : "Completa este campo.");
+      }
+      if (!f.reportValidity()) return;
       const fd = new FormData(f);
       const payload = {
         source: f.dataset.source || "demo",
@@ -213,37 +235,44 @@
       };
 
       if (errEl) { errEl.hidden = true; errEl.textContent = ""; }
-      const label = btn ? btn.textContent : "";
-      if (btn) { btn.textContent = "Enviando…"; btn.style.pointerEvents = "none"; }
+      if (statusEl) statusEl.textContent = "";
+      const label = btn.textContent;
+      btn.textContent = "Enviando…";
+      btn.disabled = true;
+      f.setAttribute("aria-busy", "true");
+      // Keep the submitted values stable until delivery has been confirmed.
+      const inputs = [...f.querySelectorAll("input, select, textarea")].filter((input) => !input.disabled);
+      inputs.forEach((input) => { input.disabled = true; });
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 20000);
 
       try {
         const res = await fetch("/api/lead", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
+          body: JSON.stringify(payload),
+          signal: controller.signal
         });
         const data = await res.json().catch(() => ({}));
-        if (!res.ok || !data.ok) throw new Error((data && data.error) || "Error");
-
-        if (btn) {
-          btn.textContent = "¡Listo! Te contactamos ✦";
-          setTimeout(() => {
-            btn.textContent = label;
-            btn.style.pointerEvents = "";
-            f.reset && f.reset();
-          }, 2600);
-        }
+        if (!res.ok || data.ok !== true) throw new Error((data && data.error) || "Error");
+        f.reset();
+        if (statusEl) statusEl.textContent = "Recibimos tu solicitud. Te contactaremos al correo que nos compartiste.";
       } catch (err) {
-        if (btn) { btn.textContent = label; btn.style.pointerEvents = ""; }
         if (errEl) {
           const contact = document.createElement("a");
           contact.href = "https://wa.me/529992152117";
           contact.target = "_blank";
           contact.rel = "noopener noreferrer";
           contact.textContent = "escríbenos por WhatsApp";
-          errEl.replaceChildren("No pudimos enviar tus datos. Intenta de nuevo o ", contact, ".");
+          errEl.replaceChildren("No pudimos confirmar el envío. Tus datos siguen aquí; intenta de nuevo o ", contact, ".");
           errEl.hidden = false;
         }
+      } finally {
+        clearTimeout(timeout);
+        inputs.forEach((input) => { input.disabled = false; });
+        btn.disabled = false;
+        btn.textContent = label;
+        f.removeAttribute("aria-busy");
       }
     });
   });
