@@ -223,6 +223,7 @@
         input.setCustomValidity(input.value.trim() ? "" : "Completa este campo.");
       }
       if (!f.reportValidity()) return;
+      window.VuelveAnalytics?.capture('demo_form_submitted', { source: f.dataset.source || 'demo' });
       const fd = new FormData(f);
       const payload = {
         source: f.dataset.source || "demo",
@@ -255,9 +256,12 @@
         });
         const data = await res.json().catch(() => ({}));
         if (!res.ok || data.ok !== true) throw new Error((data && data.error) || "Error");
+        window.VuelveAnalytics?.capture('demo_form_success', { source: f.dataset.source || 'demo' });
+        f.dispatchEvent(new Event('vuelve:lead-success'));
         f.reset();
         if (statusEl) statusEl.textContent = "Recibimos tu solicitud. Te contactaremos al correo que nos compartiste.";
       } catch (err) {
+        window.VuelveAnalytics?.capture('demo_form_error', { source: f.dataset.source || 'demo', reason: err.name === 'AbortError' ? 'timeout' : 'delivery_failed' });
         if (errEl) {
           const contact = document.createElement("a");
           contact.href = "https://wa.me/529992152117";
