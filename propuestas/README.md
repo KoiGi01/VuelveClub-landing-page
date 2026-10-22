@@ -64,38 +64,3 @@ validación del formulario y consentimiento, registro entre pestañas y duplicad
 búsqueda, visita y canje, persistencia del menú, 120 combinaciones de vista/ancho
 y análisis WCAG A/AA de las vistas móviles y del registro. No hubo llamadas a APIs
 de leads/soporte, autenticación o Wallet durante estas pruebas.
-
-## Bienvenida de Ritmo: hora y clima
-
-El componente `vc-welcome` en `clima.js` muestra la fecha y hora reales del
-dispositivo. Conserva el ciruela, lima y tipografía de Ritmo; su escena SVG cambia
-entre sol, luna, nubes, lluvia, tormenta, nieve y neblina. El saludo acompaña el
-día o la noche. La transición de amanecer/atardecer se actualiza con el reloj,
-sin esperar otra consulta de clima.
-
-`/api/weather` usa la ubicación aproximada que aporta Vercel. **Usar mi ubicación**
-consulta la ubicación del navegador solo después de pulsar el botón, o cuando el
-permiso ya está concedido. Las coordenadas se redondean a dos decimales. El reloj
-no depende del permiso de ubicación. Si faltan coordenadas o falla el servicio,
-se conserva la hora sin presentar temperaturas ni condiciones ficticias.
-
-Este endpoint sí consulta un servicio real: el pronóstico del periodo más cercano
-de [MET Norway](https://api.met.no/weatherapi/locationforecast/2.0/documentation),
-con identificación de VuelveClub, caché por coordenadas redondeadas, respeto de
-`Expires` y revalidación con `If-Modified-Since`. No reenvía la IP del visitante
-al proveedor. La respuesta al navegador es privada y no se almacena en la CDN.
-El panel de información del clima incluye la atribución y licencia CC BY 4.0.
-`suncalc` 2.1.1 calcula la posición solar y los horarios de salida y puesta del sol.
-No se necesita una clave de API adicional.
-
-El componente actualiza el pronóstico cada 15 minutos, reutiliza los datos al
-navegar y libera sus temporizadores al salir de Inicio. Incluye pausa de animación
-que se conserva durante la navegación; también respeta `prefers-reduced-motion`
-y pausa el movimiento cuando la pestaña está oculta.
-
-Validación: ocho pruebas del endpoint (coordenadas, día/noche, símbolos, caché y
-fallos), 50 combinaciones de clima/ancho en navegador, reloj y atardecer sin
-recarga, permiso de ubicación y rechazo, actualización automática, limpieza de
-temporizadores, pausa persistente y análisis WCAG A/AA. El pronóstico real también
-se verificó contra el proveedor. El resto del negocio y de Wallet sigue siendo
-un prototipo con datos de ejemplo.
