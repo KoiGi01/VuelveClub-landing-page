@@ -1,0 +1,14 @@
+.access-page .auth-layout{min-height:100dvh}
+.auth-login-card{max-width:360px;width:100%;min-width:0}
+.auth-intro,.auth-status{font-size:13px;color:var(--muted);line-height:1.6;margin-top:16px}
+.google-sign-in{margin-top:26px;gap:12px;justify-content:center;background:#fffdfa!important;color:var(--ink)!important;min-height:48px}
+.google-sign-in svg{flex-shrink:0}
+.auth-login-card form label{display:block;margin-top:18px;font-size:13px;font-weight:600}
+.auth-login-card form input{width:100%;margin-top:8px;min-height:48px}
+.auth-login-card form .button{margin-top:25px}
+.auth-login-card :disabled{cursor:not-allowed;opacity:.65}
+.auth-status{font-size:12px}
+.auth-login-card .cl-rootBox,.auth-login-card .cl-cardBox{width:100%;max-width:100%;box-shadow:none}
+.auth-login-card .cl-card{background:transparent;padding:0;box-shadow:none;border:0}
+.auth-login-card .cl-footer{background:transparent}
+@media(max-width:600px){.auth-login-card{margin-inline:auto}.auth-form-wrap{padding-inline:24px}}

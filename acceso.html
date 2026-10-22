@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="es-MX">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Iniciar sesión | VuelveClub</title>
+  <link rel="icon" href="/assets/favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600&family=Hanken+Grotesk:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/propuestas/propuestas.css" />
+  <link rel="stylesheet" href="/auth.css" />
+  <script src="/auth.js" defer></script>
+</head>
+<body class="app-page access-page">
+  <a class="skip-link" href="#sign-in">Ir al inicio de sesión</a>
+  <main class="auth-layout" id="main">
+    <section class="auth-story">
+      <a href="https://www.vuelveclub.com/" aria-label="VuelveClub, inicio"><span class="brand"><img src="/assets/logo_dark-mode.png" alt="" /><span>vuelveclub<span class="brand-dot">.</span></span></span></a>
+      <div><p class="eyebrow">Tu negocio. Su lugar de siempre.</p><h1>Qué gusto<br /> tenerte<br /> <em>de vuelta.</em></h1><p>Detrás de cada visita, hay una buena historia.</p></div>
+      <div class="auth-stamp" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24" fill="currentColor"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/></svg></div>
+      <span class="auth-foot">Tarjetas que hacen que vuelvan.</span>
+    </section>
+    <section class="auth-form-wrap">
+      <a class="auth-back small-link" href="https://www.vuelveclub.com/">← Volver al inicio</a>
+      <div id="sign-in" class="auth-login-card" tabindex="-1">
+        <span class="eyebrow">Acceso al negocio</span>
+        <h2>Tu próximo buen día<br />empieza aquí.</h2>
+        <p class="auth-intro">Entra a tu cuenta para seguir haciendo que vuelvan.</p>
+        <button class="button button-outline google-sign-in" type="button" disabled aria-describedby="auth-status">
+          <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M21.6 12.23c0-.71-.06-1.39-.18-2.05H12v3.88h5.38a4.6 4.6 0 0 1-2 3.02v2.51h3.24c1.9-1.75 2.98-4.33 2.98-7.36Z"/><path fill="#34A853" d="M12 22c2.7 0 4.96-.9 6.62-2.41l-3.24-2.51c-.9.6-2.05.96-3.38.96-2.6 0-4.8-1.76-5.59-4.12H3.07v2.59A10 10 0 0 0 12 22Z"/><path fill="#FBBC05" d="M6.41 13.92A6 6 0 0 1 6.1 12c0-.67.11-1.32.31-1.92V7.49H3.07A10 10 0 0 0 2 12c0 1.61.39 3.14 1.07 4.51l3.34-2.59Z"/><path fill="#EA4335" d="M12 5.96c1.47 0 2.79.51 3.82 1.51l2.87-2.87A9.62 9.62 0 0 0 12 2a10 10 0 0 0-8.93 5.49l3.34 2.59C7.2 7.72 9.4 5.96 12 5.96Z"/></svg>
+          Continuar con Google
+        </button>
+        <div class="auth-divider"><span>o con tu correo</span></div>
+        <form id="login-placeholder" aria-describedby="auth-status">
+          <label for="access-email">Correo electrónico</label>
+          <input id="access-email" type="email" autocomplete="username" placeholder="ana@tunegocio.com" disabled />
+          <label for="access-password">Contraseña</label>
+          <input id="access-password" type="password" autocomplete="current-password" placeholder="Tu contraseña" disabled />
+          <button class="button button-dark" type="submit" disabled>Iniciar sesión</button>
+        </form>
+        <p id="auth-status" class="auth-status" role="status" aria-live="polite">Preparando el acceso…</p>
+      </div>
+      <p class="auth-help">¿Necesitas una mano? <a href="/soporte">Escríbenos</a></p>
+    </section>
+  </main>
+  <noscript><p class="no-script">Activa JavaScript para iniciar sesión.</p></noscript>
+</body>
+</html>
