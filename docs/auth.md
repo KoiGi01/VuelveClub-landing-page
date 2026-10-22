@@ -35,11 +35,14 @@ the real SDK loads in the browser. A stale recursive DNS response still resolved
 clerk.vuelveclub.com to Vercel during initial checks; public-DNS-directed tests
 preserved normal TLS certificate verification.
 
-Production browser verification: the Spanish sign-in UI loads, Google is enabled
-in Clerk's public environment config, and the Google button initiates OAuth.
-The provider currently rejects that request with "Missing required parameter:
-client_id". Production Google credentials must be saved in Clerk before this
-connection is operational. No real user's credentials or email codes were submitted.
+Production browser verification: the Spanish sign-in UI loads and Google OAuth
+opens Google's official sign-in screen without a provider error. After the user
+saved production Google credentials in Clerk, the authorization request includes
+a client_id and uses https://clerk.vuelveclub.com/v1/oauth_callback. The previous
+missing-client_id error is resolved. No real user's credentials or email codes
+were submitted, so completion with a real account and its resulting session
+remain unverified. The signed-in UI and sign-out destination were exercised with
+a Clerk test double, not a real production account.
 Until configured, Google and email controls remain disabled with an availability
 message. This is intentional: entering any password no longer opens mock data.
 
