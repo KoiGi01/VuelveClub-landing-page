@@ -29,8 +29,17 @@ by the application's Clerk Domains screen:
 - clk._domainkey → dkim1.dsrypv5tnlss.clerk.services
 - clk2._domainkey → dkim2.dsrypv5tnlss.clerk.services
 
-All five resolve publicly. Clerk's dashboard must validate the records and deploy
-its production TLS certificates; Vercel cannot issue those service certificates.
+All five resolve publicly. The user validated the records and deployed Clerk's
+production TLS certificates. HTTPS to the current public Clerk IPs succeeds and
+the real SDK loads in the browser. A stale recursive DNS response still resolved
+clerk.vuelveclub.com to Vercel during initial checks; public-DNS-directed tests
+preserved normal TLS certificate verification.
+
+Production browser verification: the Spanish sign-in UI loads, Google is enabled
+in Clerk's public environment config, and the Google button initiates OAuth.
+The provider currently rejects that request with "Missing required parameter:
+client_id". Production Google credentials must be saved in Clerk before this
+connection is operational. No real user's credentials or email codes were submitted.
 Until configured, Google and email controls remain disabled with an availability
 message. This is intentional: entering any password no longer opens mock data.
 

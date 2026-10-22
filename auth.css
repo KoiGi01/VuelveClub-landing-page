@@ -1,4 +1,4 @@
-.access-page .auth-layout{min-height:100dvh}
+.access-page #main.auth-layout{min-height:100dvh}
 .auth-login-card{max-width:360px;width:100%;min-width:0}
 .auth-intro,.auth-status{font-size:13px;color:var(--muted);line-height:1.6;margin-top:16px}
 .google-sign-in{margin-top:26px;gap:12px;justify-content:center;background:#fffdfa!important;color:var(--ink)!important;min-height:48px}
