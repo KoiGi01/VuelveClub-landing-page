@@ -1,10 +1,11 @@
 # Landing analytics
 
-PostHog runs only on the landing page, when the production Vercel environment
-has POSTHOG_PROJECT_TOKEN (public phc_ token) and POSTHOG_REGION (US or EU).
-No personal API key is needed. Add these to the existing project's Production
-environment variables and redeploy. Without configuration the integration does
-not load PostHog. Local development and Vercel previews remain disabled.
+PostHog runs only on the landing page in Vercel production. The public project
+token for the connected US Cloud project is configured in api/analytics-config.js.
+This ingestion token is intentionally public; no personal API key is used.
+POSTHOG_PROJECT_TOKEN and POSTHOG_REGION (US or EU) environment variables can
+override the project configuration. Set an empty POSTHOG_PROJECT_TOKEN to disable
+capture, then redeploy. Local development and Vercel previews remain disabled.
 
 In PostHog, enable web session replay and choose the recording sample rate and
 retention appropriate to the project. Verify an actual production visit appears
