@@ -43,21 +43,30 @@ missing-client_id error is resolved. No real user's credentials or email codes
 were submitted, so completion with a real account and its resulting session
 remain unverified. The signed-in UI and sign-out destination were exercised with
 a Clerk test double, not a real production account.
-Until configured, Google and email controls remain disabled with an availability
-message. This is intentional: entering any password no longer opens mock data.
+The HTML contains a skeleton only; it never renders a second login form. Clerk
+is mounted in an inert, hidden region while its UI initializes. A DOM observer
+waits for actual controls and two paint frames before revealing it. A reserved
+card height keeps navigation and support links stable during this transition.
+
+Configuration, SDK/UI scripts, localization, Clerk initialization and mounting
+share a 30-second deadline. On failure the skeleton is replaced with a retry
+action. Retrying cancels stale work, unmounts any existing Clerk component and
+reuses successfully loaded scripts. Browser back/forward-cache restoration
+rechecks the session without duplicating widgets. Loading uses aria-busy and an
+external live status; hidden controls cannot receive focus. Reduced-motion
+preferences disable shimmer and fade animations.
 
 Enable Google in Clerk's SSO connections. A production instance needs custom
 Google OAuth credentials, authorized origins and the redirect URI Clerk provides.
 Do not send Google Client Secrets through chat or put them in frontend code.
 The real Google button is rendered by Clerk according to that app's settings.
-The static Google button is only the unavailable-state presentation.
+There is no static Google button or local password form.
 
 The UI uses the official esMX localization from @clerk/localizations 4.24.0,
 vendored as assets/vendor/clerk-es-MX.json with its MIT license. No runtime npm
 dependency is added. Hanken Grotesk, Fredoka and the plum palette match VuelveClub.
 
 Before opening customer business workspaces:
-- Finish Clerk production domain settings and Google OAuth credentials.
 - Configure invite/restricted sign-ups for business owners and staff as appropriate.
 - Implement organization memberships and roles, verified on server-side endpoints.
 - Connect business records in Supabase, with tenant authorization and RLS policies.
@@ -66,6 +75,13 @@ Before opening customer business workspaces:
 After successful Clerk authentication the page shows the signed-in account with
 Clerk's UserButton; it does not redirect into or claim to secure the prototype
 workspace. The existing proposal routes still contain public example data only.
+
+Loading regression verification: delayed configuration and delayed mounting;
+network, SDK and mount failures with successful retries; deadline expiry and late
+completion; back/forward restoration; stable loading/ready dimensions; no
+horizontal overflow at 320/390/1440px; reduced motion. Real Clerk rendering was
+also tested with the new local assets served under the production origin. No
+production user credentials were submitted.
 
 Sources:
 - https://clerk.com/docs/js-frontend/getting-started/quickstart

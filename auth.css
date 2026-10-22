@@ -1,14 +1,26 @@
 .access-page #main.auth-layout{min-height:100dvh}
-.auth-login-card{max-width:360px;width:100%;min-width:0}
-.auth-intro,.auth-status{font-size:13px;color:var(--muted);line-height:1.6;margin-top:16px}
-.google-sign-in{margin-top:26px;gap:12px;justify-content:center;background:#fffdfa!important;color:var(--ink)!important;min-height:48px}
-.google-sign-in svg{flex-shrink:0}
-.auth-login-card form label{display:block;margin-top:18px;font-size:13px;font-weight:600}
-.auth-login-card form input{width:100%;margin-top:8px;min-height:48px}
-.auth-login-card form .button{margin-top:25px}
-.auth-login-card :disabled{cursor:not-allowed;opacity:.65}
-.auth-status{font-size:12px}
+.auth-login-card{max-width:360px;width:100%;min-width:0;min-height:500px;display:grid;position:relative}
+.auth-skeleton,.auth-widget,.auth-error{grid-area:1/1;min-width:0}
+.auth-widget{opacity:0;visibility:hidden;pointer-events:none;transition:opacity .18s ease}
+.auth-login-card[data-state=ready] .auth-widget{opacity:1;visibility:visible;pointer-events:auto}
+.auth-login-card:not([data-state=loading]) .auth-skeleton{display:none}
+.auth-skeleton{padding-top:5px;display:flex;flex-direction:column;gap:12px}
+.skeleton{display:block;background:linear-gradient(100deg,#3e2b490a 20%,#3e2b4912 40%,#3e2b490a 60%);background-size:220% 100%;animation:auth-shimmer 1.8s ease-in-out infinite;border-radius:8px}
+.auth-skeleton-heading{display:grid;justify-items:center;gap:14px;margin-bottom:24px}
+.skeleton-title{width:190px;height:30px}.skeleton-subtitle{width:175px;height:12px}
+.skeleton-social,.skeleton-input,.skeleton-submit{height:48px;width:100%;border-radius:12px}
+.skeleton-divider{display:flex;justify-content:space-between;gap:24px;margin:20px 0 22px}
+.skeleton-divider .skeleton{height:1px;flex:1}
+.skeleton-label{width:110px;height:12px;margin-top:8px}
+.skeleton-submit{margin-top:14px;background-color:#3e2b4908}
+.skeleton-footer{height:11px;width:200px;align-self:center;margin-top:8px}
+.auth-intro,.auth-error p{font-size:13px;color:var(--muted);line-height:1.6;margin-top:16px}
+.auth-error{align-self:center;padding-block:25px}
+.auth-error h2{margin-top:0}.auth-error .button{margin-top:24px;min-height:48px}
+.auth-status-sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;border:0}
 .auth-login-card .cl-rootBox,.auth-login-card .cl-cardBox{width:100%;max-width:100%;box-shadow:none}
 .auth-login-card .cl-card{background:transparent;padding:0;box-shadow:none;border:0}
 .auth-login-card .cl-footer{background:transparent}
+@keyframes auth-shimmer{from{background-position:150% 0}to{background-position:-70% 0}}
+@media(prefers-reduced-motion:reduce){.skeleton{animation:none}.auth-widget{transition:none}}
 @media(max-width:600px){.auth-login-card{margin-inline:auto}.auth-form-wrap{padding-inline:24px}}
