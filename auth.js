@@ -5,12 +5,13 @@
   const status = document.querySelector('#auth-status');
   const loadScript = (src, attributes = {}) => new Promise((resolve, reject) => {
     const script = document.createElement('script');
+    const timer = setTimeout(() => reject(new Error('Unavailable')), 15000);
     script.src = src;
     script.async = true;
     script.crossOrigin = 'anonymous';
     Object.entries(attributes).forEach(([key, value]) => script.setAttribute(key, value));
-    script.onload = resolve;
-    script.onerror = () => reject(new Error('Unavailable'));
+    script.onload = () => { clearTimeout(timer); resolve(); };
+    script.onerror = () => { clearTimeout(timer); reject(new Error('Unavailable')); };
     document.head.append(script);
   });
   async function boot() {
@@ -29,7 +30,16 @@
       await loadScript(`https://${domain}/npm/@clerk/clerk-js@6/dist/clerk.browser.js`, {
         'data-clerk-publishable-key': config.publishableKey
       });
-      await window.Clerk.load({ ui: { ClerkUI: window.__internal_ClerkUICtor } });
+      const localeResponse = await fetch('/assets/vendor/clerk-es-MX.json', { signal: AbortSignal.timeout(8000) });
+      if (!localeResponse.ok) throw new Error('Unavailable');
+      const localization = await localeResponse.json();
+      await window.Clerk.load({
+        ui: { ClerkUI: window.__internal_ClerkUICtor },
+        localization,
+        signInUrl: '/iniciar-sesion',
+        signInForceRedirectUrl: '/iniciar-sesion',
+        afterSignOutUrl: '/iniciar-sesion'
+      });
       if (window.Clerk.isSignedIn) {
         container.replaceChildren();
         const message = document.createElement('p');
@@ -40,18 +50,32 @@
         window.Clerk.mountUserButton(account);
         return;
       }
-      container.replaceChildren();
-      window.Clerk.mountSignIn(container, {
+      const widget = document.createElement('div');
+      container.replaceChildren(widget);
+      window.Clerk.mountSignIn(widget, {
         routing: 'hash',
         forceRedirectUrl: '/iniciar-sesion',
         withSignUp: false,
         appearance: {
           variables: { colorPrimary: '#3E2B49', colorBackground: '#F9F7EF',
-            colorText: '#131217', fontFamily: '"Hanken Grotesk", sans-serif', borderRadius: '14px' }
+            colorText: '#131217', fontFamily: '"Hanken Grotesk", sans-serif', borderRadius: '14px' },
+          elements: {
+            headerTitle: { fontFamily: 'Fredoka, sans-serif', fontWeight: '400', fontSize: '30px' },
+            socialButtonsBlockButton: { minHeight: '48px' },
+            formButtonPrimary: { minHeight: '48px' }
+          }
         }
       });
     } catch {
-      if (status.isConnected) status.textContent = 'No pudimos cargar el acceso. Recarga la página o escríbenos para ayudarte.';
+      const message = 'No pudimos cargar el acceso. Recarga la página o escríbenos para ayudarte.';
+      if (status.isConnected) status.textContent = message;
+      else {
+        const error = document.createElement('p');
+        error.className = 'auth-status';
+        error.setAttribute('role', 'alert');
+        error.textContent = message;
+        container.replaceChildren(error);
+      }
     }
   }
   boot();

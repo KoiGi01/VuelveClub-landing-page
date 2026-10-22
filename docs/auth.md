@@ -18,6 +18,19 @@ to the static prototype or stored by our JavaScript. This page has no PostHog SD
 
 Configure CLERK_PUBLISHABLE_KEY in Vercel and redeploy. Production accepts only
 pk_live_ keys; development/preview may use pk_test_. Never expose sk_ secret keys.
+The production publishable key provided for clerk.vuelveclub.com is configured
+as a Vercel Production environment variable. Clerk DNS and certificates must be
+deployed before that domain can serve the SDK and Frontend API.
+The following CNAME records were added to Vercel DNS from the values supplied
+by the application's Clerk Domains screen:
+- clerk → frontend-api.clerk.services
+- accounts → accounts.clerk.services
+- clkmail → mail.dsrypv5tnlss.clerk.services
+- clk._domainkey → dkim1.dsrypv5tnlss.clerk.services
+- clk2._domainkey → dkim2.dsrypv5tnlss.clerk.services
+
+All five resolve publicly. Clerk's dashboard must validate the records and deploy
+its production TLS certificates; Vercel cannot issue those service certificates.
 Until configured, Google and email controls remain disabled with an availability
 message. This is intentional: entering any password no longer opens mock data.
 
@@ -27,8 +40,12 @@ Do not send Google Client Secrets through chat or put them in frontend code.
 The real Google button is rendered by Clerk according to that app's settings.
 The static Google button is only the unavailable-state presentation.
 
+The UI uses the official esMX localization from @clerk/localizations 4.24.0,
+vendored as assets/vendor/clerk-es-MX.json with its MIT license. No runtime npm
+dependency is added. Hanken Grotesk, Fredoka and the plum palette match VuelveClub.
+
 Before opening customer business workspaces:
-- Configure Spanish localization in Clerk and branding/production domain settings.
+- Finish Clerk production domain settings and Google OAuth credentials.
 - Configure invite/restricted sign-ups for business owners and staff as appropriate.
 - Implement organization memberships and roles, verified on server-side endpoints.
 - Connect business records in Supabase, with tenant authorization and RLS policies.
