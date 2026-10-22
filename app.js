@@ -236,7 +236,12 @@
       } catch (err) {
         if (btn) { btn.textContent = label; btn.style.pointerEvents = ""; }
         if (errEl) {
-          errEl.textContent = "No pudimos enviar tus datos. Intenta de nuevo o escríbenos por WhatsApp.";
+          const contact = document.createElement("a");
+          contact.href = "https://wa.me/529992152117";
+          contact.target = "_blank";
+          contact.rel = "noopener noreferrer";
+          contact.textContent = "escríbenos por WhatsApp";
+          errEl.replaceChildren("No pudimos enviar tus datos. Intenta de nuevo o ", contact, ".");
           errEl.hidden = false;
         }
       }
