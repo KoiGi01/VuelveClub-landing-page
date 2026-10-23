@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { before, test } from 'node:test';
 import { generateKeyPair, exportPKCS8, jwtVerify } from 'jose';
-import { createWalletService, validateDesign, WalletError } from '../lib/google-wallet.js';
+import { createWalletService, validateDesign, stampImage, WalletError } from '../lib/google-wallet.js';
 import { createHandler } from '../api/wallet-test.js';
 
 let env, publicKey;
@@ -40,11 +40,19 @@ test('creates test-only loyalty resources and signs a compact Save to Wallet lin
   assert.equal(mock.resources.length, 2);
   assert.equal(mock.resources[0].reviewStatus, 'UNDER_REVIEW');
   assert.equal(mock.resources[0].hexBackgroundColor, design.color);
+  assert.equal(mock.resources[0].heroImage.sourceUri.uri, 'https://www.vuelveclub.com/assets/wallet/stamps-10-dark.png');
   assert.match(mock.resources[0].programName, /Prueba/);
   assert.equal(mock.resources[1].accountName, 'Alex Demo');
   assert.deepEqual(mock.resources[1].loyaltyPoints.balance, { string: '0 / 10' });
   assert.match(mock.resources[1].barcode.value, /^VC-TEST-/);
   assert.ok(!JSON.stringify(result).includes('private-test-token'));
+});
+test('stamp art matches the visit goal and remains visible on light and dark cards', () => {
+  for (const goal of [5, 8, 10, 12]) {
+    assert.match(stampImage(goal, '#3E2B49'), new RegExp(`stamps-${goal}-light\\.png$`));
+    assert.match(stampImage(goal, '#CBDE2A'), new RegExp(`stamps-${goal}-dark\\.png$`));
+    assert.match(stampImage(goal, '#F1ECDF'), new RegExp(`stamps-${goal}-dark\\.png$`));
+  }
 });
 test('resource IDs are stable for retries and isolated across users and designs', async () => {
   const mock = googleMock({ existing: true });

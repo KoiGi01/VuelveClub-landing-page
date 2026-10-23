@@ -25,6 +25,14 @@ background color, business name, visit goal and reward. It previews supported
 Google Wallet fields; Google controls the final native typography and layout.
 Saving a draft uses the current browser's sessionStorage, not a business database.
 
+Test card version v2 adds outlined heart stamps using the supported `heroImage`
+field. Eight transparent 1032x812 PNGs cover goals 5/8/10/12 in dark and light
+ink. The preview uses the same PNG as the real card, choosing contrast based on
+background luminance. Images have no customer data and are hosted publicly over
+HTTPS. All stamps start empty, matching 0 visits; visit recording and dynamic
+image updates remain pending. New resource IDs leave previous v1 test cards
+unchanged: generate a new test card to see the stamps.
+
 POST /api/wallet-test verifies a production Clerk session and accepts only the
 validated design, never browser-supplied resource IDs or account identity. Every
 signed-in user may create test cards for their own account. Classes and objects
