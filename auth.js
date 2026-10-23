@@ -106,44 +106,12 @@
         if (!sessionResponse.ok) throw new Error('Unavailable');
         const session = await sessionResponse.json();
         signal.throwIfAborted();
-        const message = document.createElement('p');
-        message.className = 'auth-intro';
-        message.textContent = session.role === 'admin'
-          ? 'Revisa la experiencia de tus negocios desde tu cuenta.'
-          : 'Ya iniciaste sesión. Estamos preparando el acceso a tu negocio.';
-        if (session.role === 'admin') {
-          const label = document.createElement('span');
-          label.className = 'eyebrow';
-          label.textContent = 'Tu cuenta de administrador';
-          const heading = document.createElement('h2');
-          heading.textContent = 'Qué gusto tenerte aquí.';
-          widget.append(label, heading);
-        }
-        const account = document.createElement('div');
-        account.className = 'auth-account';
-        widget.append(message, account);
-        if (session.role === 'admin' && session.canPreview) {
-          const preview = document.createElement('a');
-          preview.className = 'button button-dark admin-preview-button';
-          preview.href = '/propuestas/ritmo?vista=cliente';
-          preview.textContent = 'Ver dashboard como cliente';
-          const caption = document.createElement('p');
-          caption.className = 'auth-intro admin-preview-caption';
-          caption.textContent = 'Explora el negocio de ejemplo. Tu sesión de administrador se mantiene.';
-          widget.append(preview, caption);
-        } else {
-          const designer = document.createElement('a');
-          designer.className = 'button button-dark admin-preview-button';
-          designer.href = '/propuestas/ritmo#tarjeta';
-          designer.textContent = 'Diseñar tarjeta de prueba';
-          widget.append(designer);
-        }
-        unmount = () => window.Clerk.unmountUserButton(account);
-        window.Clerk.mountUserButton(account);
+        location.replace(session.role === 'admin' ? '/admin' : '/equipo');
+        return;
       } else {
         unmount = () => window.Clerk.unmountSignIn(widget);
         window.Clerk.mountSignIn(widget, {
-          routing: 'hash', forceRedirectUrl: '/iniciar-sesion', withSignUp: false,
+          routing: 'hash', forceRedirectUrl: '/iniciar-sesion', withSignUp: true,
           appearance: {
             variables: { colorPrimary: '#3E2B49', colorBackground: '#F9F7EF',
               colorText: '#131217', fontFamily: '"Hanken Grotesk", sans-serif', borderRadius: '14px' },

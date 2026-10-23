@@ -68,7 +68,7 @@ dependency is added. Hanken Grotesk, Fredoka and the plum palette match VuelveCl
 
 Before opening customer business workspaces:
 - Configure invite/restricted sign-ups for business owners and staff as appropriate.
-- Implement organization memberships and roles, verified on server-side endpoints.
+- Organization memberships and admin/member roles now use Clerk, with live server checks (see docs/admin-and-team.md).
 - Connect business records in Supabase, with tenant authorization and RLS policies.
 - Protect APIs with verified Clerk sessions. A browser-only redirect is not access control.
 
@@ -79,21 +79,29 @@ are rejected. Responses are never cached. No email or role sent by the browser
 can grant access.
 
 VUELVE_ADMIN_USER_IDS is a server-only, comma-separated allowlist of immutable
-production Clerk user IDs. Only configured users receive the application admin
-role and the "Ver dashboard como cliente" button. This does not grant access to
-the Clerk management console. Keep this policy server-side when adding future
-admin endpoints; hiding a button alone is not authorization.
+production Clerk user IDs. The verified production account for
+luismedlozn@gmail.com is configured in Vercel. This grants application admin
+access, not access to Clerk's management console. Never authorize by a
+browser-supplied email or role.
 
-The button opens /propuestas/ritmo?vista=cliente, with an explicit example-data
-banner and a link back to the account. This is a preview of a business dashboard,
-not impersonation of an actual customer. It retains the Clerk session and uses
-separate sessionStorage (vc-client-preview-v1), leaving the normal prototype
-state untouched. The proposal routes still contain public example data only.
-Ordinary members see their signed-in account, the pending-business-access
-message, and a "Diseñar tarjeta de prueba" link. This leads to the example
-dashboard's card editor. Its test-card API verifies the user's session and
-isolates Google resources by user ID. It does not enable real tenant operations;
-onboarding and tenant data are still pending.
+After authentication, admins go to /admin and business users go to /equipo,
+keeping the loading skeleton visible until navigation. /admin lists real Clerk
+organizations and users, with counts, search and pagination. Platform admins
+can provision businesses for verified existing accounts and view each team's
+access. A "Ver como cliente" button still opens the explicitly labeled sample
+workspace. /equipo supports invitations, acceptance, admin/member roles, revocation
+and membership removal. Its APIs verify current Clerk membership on every
+request; changing the organization ID cannot grant access to another tenant.
+
+CLERK_SECRET_KEY is required server-side for these management endpoints.
+Organizations must be enabled in Clerk Production. Secret keys never appear in
+public config responses or frontend files. See docs/admin-and-team.md for the
+role policy, invitation flow, safeguards and verification limits.
+
+The proposal routes continue to contain public example loyalty data. Their
+Equipo navigation now goes to real account/team management. Business transaction
+records, stamp recording, redemption and animated onboarding remain pending;
+team membership does not make those prototype actions real.
 
 Role tests use real generated RSA keys and signed tokens to cover admin/member
 policy, forged claims, tampering, expiry, invalid origin/issuer, pending sessions

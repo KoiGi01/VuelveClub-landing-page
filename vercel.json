@@ -8,6 +8,8 @@
     { "source": "/support", "destination": "/soporte", "permanent": true }
   ],
   "rewrites": [
+    { "source": "/admin", "destination": "/dashboard/index.html" },
+    { "source": "/equipo", "destination": "/dashboard/index.html" },
     { "source": "/iniciar-sesion", "destination": "/acceso.html" },
     { "source": "/soporte", "destination": "/soporte.html" },
     { "source": "/propuestas", "destination": "/propuestas/index.html" },
