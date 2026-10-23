@@ -14,10 +14,10 @@ an empty credentials placeholder. Environment changes apply to new deployments.
 
 Configuration verification: the key parses, its account matches the expected
 service account, and Google's OAuth token endpoint accepts a signed RS256
-assertion with the `wallet_object.issuer` scope. An issuer GET currently returns
-403 `accessNotConfigured`: enable Google Wallet API in the service account's
-Google Cloud project before retrying. This verification does not create passes
-and does not confirm publishing approval.
+assertion with the `wallet_object.issuer` scope. After enabling Google Wallet API
+and authorizing the service account, a repeat issuer GET returned HTTP 200 for
+`3388000000023226779`. This verifies authenticated issuer access. It does not
+create passes and does not confirm publishing approval.
 
 The service account must also be a Developer in the Wallet issuer's Users screen.
 Once API access works, implement persistent enrollment records, loyalty classes
