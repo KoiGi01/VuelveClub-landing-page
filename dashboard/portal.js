@@ -256,6 +256,7 @@ import { businessTabs, businessHref, renderCard, renderCustomers, customerResult
     const url = new URL(link.href); if (url.origin !== location.origin) return;
     event.preventDefault(); navigate(url.href);
   });
+  document.addEventListener('vuelve:navigate', event => { if (session && typeof event.detail?.href === 'string') { const url = new URL(event.detail.href, location.href); if (url.origin === location.origin && ['/admin', '/equipo'].includes(url.pathname)) { event.preventDefault(); navigate(url.href); } } });
   function prefetch(event) {
     const link = event.target.closest('a[data-route][data-tab]');
     if (!link || session?.role !== 'admin') return;

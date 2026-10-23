@@ -210,6 +210,8 @@
 
   /* ---------- forms: submit to /api/lead ---------- */
   document.querySelectorAll("form[data-demo]").forEach((f) => {
+    let requestId;
+    f.addEventListener('input', () => { requestId = undefined; });
     const btn = f.querySelector("button[type=submit]");
     const errEl = f.querySelector(".form-error");
     const statusEl = f.querySelector(".form-status");
@@ -226,6 +228,7 @@
       window.VuelveAnalytics?.capture('demo_form_submitted', { source: f.dataset.source || 'demo' });
       const fd = new FormData(f);
       const payload = {
+        requestId: requestId ||= crypto.randomUUID(),
         source: f.dataset.source || "demo",
         email: (fd.get("email") || "").trim(),
         nombre: (fd.get("nombre") || "").trim(),
@@ -259,6 +262,7 @@
         window.VuelveAnalytics?.capture('demo_form_success', { source: f.dataset.source || 'demo' });
         f.dispatchEvent(new Event('vuelve:lead-success'));
         f.reset();
+        requestId = undefined;
         if (statusEl) statusEl.textContent = "Recibimos tu solicitud. Te contactaremos al correo que nos compartiste.";
       } catch (err) {
         window.VuelveAnalytics?.capture('demo_form_error', { source: f.dataset.source || 'demo', reason: err.name === 'AbortError' ? 'timeout' : 'delivery_failed' });

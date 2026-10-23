@@ -40,6 +40,9 @@ recording disabled. Automatic event URL query strings/fragments are removed;
 replay URL redaction also removes queries/fragments. Do not put personal data in
 URL paths or public page copy. Attribution query values are intentionally omitted.
 No SDK is installed on support, enrollment, or platform prototype pages.
+The entire `vuelve-support-chat` element is blocked from session replay with
+`blockSelector` and `ph-no-capture`; questions, answers and email handoff fields
+are not recorded. Chat activity is not added to the landing event allowlist.
 
 References:
 - https://posthog.com/docs/libraries/js

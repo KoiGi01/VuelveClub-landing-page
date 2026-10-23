@@ -106,6 +106,7 @@
             enable_recording_console_log: false,
             disable_session_recording: false,
             session_recording: {
+              blockSelector: 'vuelve-support-chat',
               maskAllInputs: true,
               maskTextSelector: '.form-status, .form-error, [data-private]',
               recordBody: false,

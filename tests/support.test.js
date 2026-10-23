@@ -72,7 +72,7 @@ test("sends support details with customer reply address and escaped HTML", async
   assert.equal(res.statusCode, 200);
   assert.equal(res.body.ok, true);
   assert.equal(sent.reply_to, valid.email);
-  assert.deepEqual(sent.to, [process.env.SUPPORT_TO_EMAIL || "luismedlozn@gmail.com"]);
+  assert.deepEqual(sent.to, (process.env.SUPPORT_TO_EMAIL || "support@vuelveclub.com").split(',').map(x=>x.trim()));
   assert.ok(sent.subject.includes(valid.asunto));
   assert.ok(sent.text.includes(valid.negocio));
   assert.ok(sent.html.includes("&lt;script&gt;"));

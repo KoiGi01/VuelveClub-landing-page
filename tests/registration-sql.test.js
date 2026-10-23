@@ -55,3 +55,12 @@ test('rate limits are shared in PostgreSQL and browser roles cannot invoke privi
     await db.exec('reset role');
   }
 });
+test('support quotas are shared, separated by scope and inaccessible to browser roles',async()=>{
+  const bucket='b'.repeat(64);
+  for(let i=1;i<=22;i++)assert.equal((await db.query("select public.vc_support_limit($1,'chat_ip') as allowed",[bucket])).rows[0].allowed,i<=20);
+  assert.equal((await db.query("select public.vc_support_limit($1,'chat_global') as allowed",[bucket])).rows[0].allowed,true);
+  for(let i=1;i<=7;i++)assert.equal((await db.query("select public.vc_support_limit($1,'mail_ip') as allowed",[bucket])).rows[0].allowed,i<=5);
+  await db.query("update public.support_request_limits set window_start=now()-interval '2 hours' where scope='mail_ip'");
+  assert.equal((await db.query("select public.vc_support_limit($1,'mail_ip') as allowed",[bucket])).rows[0].allowed,true);
+  await db.exec('set role anon');await assert.rejects(db.query("select public.vc_support_limit($1,'chat_ip')",[bucket]),e=>e.code==='42501');await db.exec('reset role');
+});

@@ -1,5 +1,8 @@
 {
   "functions": {
+    "api/lead.js": { "maxDuration": 30 },
+    "api/support.js": { "maxDuration": 30 },
+    "api/chat.js": { "maxDuration": 30 },
     "api/business.js": { "maxDuration": 60 },
     "api/enrollment.js": { "maxDuration": 60 },
     "api/wallet-test.js": { "maxDuration": 60 },

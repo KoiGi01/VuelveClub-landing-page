@@ -1,6 +1,8 @@
 const form = document.querySelector("#support-form");
 const button = form.querySelector("button[type=submit]");
 const status = form.querySelector(".support-status");
+let requestId;
+form.addEventListener('input', () => { requestId = undefined; });
 
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
@@ -8,6 +10,8 @@ form.addEventListener("submit", async (event) => {
 
   const data = Object.fromEntries(new FormData(form));
   for (const key of Object.keys(data)) data[key] = data[key].trim();
+  requestId ||= crypto.randomUUID();
+  data.requestId = requestId;
   if (!data.nombre || !data.email || !data.asunto || !data.mensaje) {
     status.textContent = "Completa los campos obligatorios antes de enviar.";
     status.className = "support-status error";
@@ -32,6 +36,7 @@ form.addEventListener("submit", async (event) => {
     const result = await response.json().catch(() => ({}));
     if (!response.ok || result.ok !== true) throw new Error("Support request failed");
     form.reset();
+    requestId = undefined;
     status.textContent = "Recibimos tu solicitud. Te responderemos al correo que nos compartiste.";
   } catch {
     status.textContent = "No pudimos confirmar el envío. Tus datos siguen aquí; intenta de nuevo en unos minutos.";
