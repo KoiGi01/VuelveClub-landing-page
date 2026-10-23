@@ -31,7 +31,7 @@ try {
   await client.query('create table if not exists vuelve_migrations.applied (name text primary key, checksum text not null, applied_at timestamptz not null default now())');
   const directory = new URL('../supabase/migrations/', import.meta.url);
   for (const name of (await readdir(directory)).filter(name => /^\d+_[a-z0-9_]+\.sql$/.test(name)).sort()) {
-    const sql = await readFile(new URL(name, directory), 'utf8');
+    const sql = (await readFile(new URL(name, directory), 'utf8')).replace(/\r\n/g, '\n');
     const checksum = createHash('sha256').update(sql).digest('hex');
     const previous = await client.query('select checksum from vuelve_migrations.applied where name=$1', [name]);
     if (previous.rows.length) {
