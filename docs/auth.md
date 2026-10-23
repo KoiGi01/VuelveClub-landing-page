@@ -56,6 +56,13 @@ rechecks the session without duplicating widgets. Loading uses aria-busy and an
 external live status; hidden controls cannot receive focus. Reduced-motion
 preferences disable shimmer and fade animations.
 
+Clerk's card wrapper explicitly allows overflow, and the nested card no longer
+uses its default negative margins. The last-authentication badge stays inset
+inside its Google button, avoiding clipped text and input borders. Scoped label
+and heading resets prevent prototype styles from adding unwanted margins to
+Clerk controls. Verified with the real Clerk UI and the Google last-used badge
+at 320/390/1280/1440/2463px; no horizontal page overflow or credentials submitted.
+
 Enable Google in Clerk's SSO connections. A production instance needs custom
 Google OAuth credentials, authorized origins and the redirect URI Clerk provides.
 Do not send Google Client Secrets through chat or put them in frontend code.
