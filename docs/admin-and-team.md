@@ -91,10 +91,11 @@ use a Clerk test double; real end-to-end email delivery and invite acceptance
 still require the actual invited user's account.
 
 Supabase now has the initial business/customer/card/event schema; see
-`database.md`. Customer enrollment and transaction endpoints are not activated.
+`database.md`. Its real customer enrollment and saved-design endpoints are now
+available through the business's Clientes and Tu tarjeta tabs.
 Visits, redemptions and customer lists in the sample workspace remain simulations.
-The two business roles currently govern real team management; permission checks
-must be applied to future business data endpoints when those are implemented.
+The two business roles govern team management and business data access. Current
+Clerk permissions are checked before every business-data request and mutation.
 The animated onboarding remains deferred.
 
 References:

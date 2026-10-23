@@ -94,10 +94,18 @@ preview, draft saving, sign-in/error/loading states, the QR and downloads at
 320/390/1440px. Server tests cover resource isolation, retry reuse, JWT signature,
 expiry, configuration failure and HTTP authorization.
 
-The user explicitly chose test cards while Supabase is pending. Implement
-persistent enrollment records and tenant membership authorization before enabling
-real consumer registration and reward operations. The current public enrollment
-page remains an explicitly labeled design preview and collects no server data.
+The proposal editor and cafe-buen-dia route remain explicitly labeled previews.
+The real business editor at `/equipo?negocio=...#tarjeta` now saves designs in
+Supabase. Publishing generates a business-wide registration QR. Its UUID route
+loads the saved active design; customers submit their details and consent without
+logging in, then receive a Google Wallet Save link. See `database.md` for the
+transaction, retry capability and permissions. `issueMember` uses immutable
+business/design class IDs and card object IDs, the actual customer's name and
+approved business logo. Contact details stay out of the Wallet payload. Google
+object retries never reset points. The pass QR only identifies the card and
+does not authorize a stamp or redemption. Apple Wallet and real reward operations
+are not yet enabled. New live memberships were tested with provider doubles;
+no production consumer passes were generated for QA.
 
 Reference:
 - https://developers.google.com/wallet/retail/loyalty-cards/getting-started/auth/rest

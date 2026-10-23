@@ -1,4 +1,5 @@
 import { ReadCache } from './read-cache.js';
+import { businessTabs, businessHref, renderCard, renderCustomers, customerResults, mountBusiness } from './business.js';
 
 (() => {
   const root = document.querySelector('#portal'), dialog = document.querySelector('#dialog');
@@ -7,7 +8,9 @@ import { ReadCache } from './read-cache.js';
   const viewStates = new Map();
   let renderedView = '', sessionId, unsubscribe, activeRoute = '', visibleUrl = location.href, loadedAt = 0;
   const adminView = () => location.hash === '#usuarios' ? 'users' : 'businesses';
+  const businessView = () => ['#clientes', '#tarjeta'].includes(location.hash) ? location.hash.slice(1) : 'equipo';
   const endpoint = () => isAdminPage ? `/api/admin?${new URLSearchParams({ view: adminView(), search, offset: String(offset) })}`
+    : businessView() !== 'equipo' ? `/api/business?${new URLSearchParams({ view: businessView() === 'clientes' ? 'customers' : 'card', ...(selectedOrg ? { organizationId: selectedOrg } : {}), search, offset: String(offset) })}`
     : `/api/team?${new URLSearchParams({ ...(selectedOrg ? { organizationId: selectedOrg } : {}), offset: String(offset) })}`;
   const cacheKey = path => `${session?.userId || ''}:${sessionId || ''}:${path}`;
   const getRead = (path, preloaded) => readCache.get(cacheKey(path), () => preloaded ? preloaded.then(result => { if (result.error) throw result.error; return result.value; }) : window.VuelveAccount.request(path));
@@ -33,7 +36,7 @@ import { ReadCache } from './read-cache.js';
   function skeleton() { return '<div class="content-skeleton" aria-label="Cargando información"><div class="skeleton heading-skeleton"></div><div class="skeleton sub-skeleton"></div><div class="skeleton-grid"><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div></div><div class="skeleton table-skeleton"></div></div>'; }
   function shell() {
     const platform = session.role === 'admin';
-    root.innerHTML = `<div class="portal-layout"><aside class="portal-sidebar" id="navigation"><div class="brand-row"><a class="brand" data-route href="${platform ? '/admin#negocios' : '/equipo'}" aria-label="VuelveClub, inicio"><img src="/assets/logo_dark-mode.png" alt="" /><span>vuelveclub<span class="brand-dot">.</span></span></a><button class="icon-button sidebar-collapse" data-action="collapse" aria-label="Colapsar barra lateral" aria-expanded="true">${icon('collapse')}</button></div><div class="scope-label">${icon(platform ? 'shield' : 'store')}<span>${platform ? 'Administración' : 'Mi negocio'}</span></div><span class="nav-label">${platform ? 'Gestionar' : 'Tu cuenta'}</span><nav aria-label="Principal">${platform ? `<a href="/admin#negocios" data-route data-tab="negocios" aria-label="Negocios">${icon('store')}<span>Negocios</span></a><a href="/admin#usuarios" data-route data-tab="usuarios" aria-label="Usuarios">${icon('people')}<span>Usuarios</span></a>` : `<a href="/equipo" data-route class="active" aria-label="Equipo y permisos">${icon('people')}<span>Equipo y permisos</span></a><a href="/propuestas/ritmo?vista=cliente#tarjeta">${icon('store')}<span>Tarjeta de prueba</span></a>`}</nav><div class="sidebar-end">${platform ? `<a class="example-link" href="/propuestas/ritmo?vista=cliente"><span>Vista de cliente <small>Ejemplo</small></span>${icon('arrow')}</a>` : ''}<a href="/soporte" target="_blank" rel="noopener">Centro de ayuda ${icon('arrow')}</a><button data-action="signout" aria-label="Cerrar sesión">${icon('logout')}<span>Cerrar sesión</span></button></div></aside><div class="portal-workspace"><header class="portal-header"><button class="icon-button mobile-menu" data-action="menu" aria-label="Abrir navegación" aria-expanded="false" aria-controls="navigation">${icon('menu')}</button><span class="header-path" id="header-path"></span><div class="header-account"><span>${esc(window.Clerk?.user?.firstName || 'Tu cuenta')}</span><span class="avatar">${initials(window.Clerk?.user?.firstName || 'VC')}</span></div></header><main id="main" tabindex="-1">${skeleton()}</main><footer>Que sigan volviendo.<span>VuelveClub</span></footer></div></div>`;
+    root.innerHTML = `<div class="portal-layout"><aside class="portal-sidebar" id="navigation"><div class="brand-row"><a class="brand" data-route href="${platform ? '/admin#negocios' : '/equipo'}" aria-label="VuelveClub, inicio"><img src="/assets/logo_dark-mode.png" alt="" /><span>vuelveclub<span class="brand-dot">.</span></span></a><button class="icon-button sidebar-collapse" data-action="collapse" aria-label="Colapsar barra lateral" aria-expanded="true">${icon('collapse')}</button></div><div class="scope-label">${icon(platform ? 'shield' : 'store')}<span>${platform ? 'Administración' : 'Mi negocio'}</span></div><span class="nav-label">${platform ? 'Gestionar' : 'Tu cuenta'}</span><nav aria-label="Principal">${platform ? `<a href="/admin#negocios" data-route data-tab="negocios" aria-label="Negocios">${icon('store')}<span>Negocios</span></a><a href="/admin#usuarios" data-route data-tab="usuarios" aria-label="Usuarios">${icon('people')}<span>Usuarios</span></a>` : `<a href="/equipo" data-route data-business-nav="equipo" class="active" aria-label="Equipo y permisos">${icon('people')}<span>Equipo y permisos</span></a><a href="/equipo#clientes" data-route data-business-nav="clientes" aria-label="Clientes">${icon('people')}<span>Clientes</span></a><a href="/equipo#tarjeta" data-route data-business-nav="tarjeta" aria-label="Tu tarjeta">${icon('store')}<span>Tu tarjeta</span></a>`}</nav><div class="sidebar-end">${platform ? `<a class="example-link" href="/propuestas/ritmo?vista=cliente"><span>Vista de cliente <small>Ejemplo</small></span>${icon('arrow')}</a>` : ''}<a href="/soporte" target="_blank" rel="noopener">Centro de ayuda ${icon('arrow')}</a><button data-action="signout" aria-label="Cerrar sesión">${icon('logout')}<span>Cerrar sesión</span></button></div></aside><div class="portal-workspace"><header class="portal-header"><button class="icon-button mobile-menu" data-action="menu" aria-label="Abrir navegación" aria-expanded="false" aria-controls="navigation">${icon('menu')}</button><span class="header-path" id="header-path"></span><div class="header-account"><span>${esc(window.Clerk?.user?.firstName || 'Tu cuenta')}</span><span class="avatar">${initials(window.Clerk?.user?.firstName || 'VC')}</span></div></header><main id="main" tabindex="-1">${skeleton()}</main><footer>Que sigan volviendo.<span>VuelveClub</span></footer></div></div>`;
     updateContext(); updateNavigation();
   }
   function updateContext() {
@@ -44,7 +47,9 @@ import { ReadCache } from './read-cache.js';
     });
     const label = isAdminPage ? `Administración / ${adminView() === 'users' ? 'Usuarios' : 'Negocios'}` : platform ? 'Administración / Negocios / Equipo' : 'Mi negocio / Equipo';
     document.querySelector('#header-path').textContent = label;
-    document.title = `${isAdminPage ? adminView() === 'users' ? 'Usuarios' : 'Negocios' : 'Equipo y permisos'} | VuelveClub`;
+    if (!isAdminPage) document.querySelector('#header-path').textContent = `${platform ? 'Administración / Negocios' : 'Mi negocio'} / ${businessView() === 'clientes' ? 'Clientes' : businessView() === 'tarjeta' ? 'Tu tarjeta' : 'Equipo'}`;
+    document.querySelectorAll('a[data-business-nav]').forEach(a => { a.href = businessHref(selectedOrg, a.dataset.businessNav); a.classList.toggle('active', !isAdminPage && businessView() === a.dataset.businessNav); });
+    document.title = `${isAdminPage ? adminView() === 'users' ? 'Usuarios' : 'Negocios' : businessView() === 'clientes' ? 'Clientes' : businessView() === 'tarjeta' ? 'Tu tarjeta' : 'Equipo y permisos'} | VuelveClub`;
   }
   function updateNavigation() {
     const sidebar = document.querySelector('.portal-sidebar');
@@ -70,12 +75,13 @@ import { ReadCache } from './read-cache.js';
     const back = session.role === 'admin' ? `<a class="context-back" data-route href="/admin#negocios">${icon('arrow')}Volver a negocios</a>` : '';
     let content = back + heading(session.role === 'admin' ? 'Negocios / Equipo' : 'Mi negocio / Equipo', data.business ? `${esc(data.business.name)}` : 'Equipo y permisos', data.business ? 'Equipo y permisos. Administra los accesos de este negocio.' : 'Invitaciones y accesos a tus negocios.', createInvite) + `<div id="my-invitations">${myInvitations()}</div>` + selector;
     if (!data.business) return content + `<section class="panel">${empty('Tu negocio todavía no está asignado.', 'Si recibiste una invitación, inicia sesión con el correo al que llegó. También puedes contactar a soporte para dar de alta tu negocio.')}<div class="empty-actions"><a class="button outline" href="/soporte">Contactar a soporte</a><a class="button primary" href="/propuestas/ritmo?vista=cliente#tarjeta">Diseñar tarjeta de prueba</a></div></section>`;
+    content += businessTabs(data.business.id, 'equipo');
     content += `<section class="panel"><div class="panel-heading"><h2>Personas con acceso</h2><span>${data.memberCount} en el equipo</span></div><div class="table-scroll"><table class="team-table"><thead><tr><th>Persona</th><th>Permisos</th><th>Acceso</th></tr></thead><tbody>${data.members.map(m => `<tr><td><div class="identity"><span class="avatar">${initials(m.name)}</span><div><strong>${esc(m.name)} ${m.isSelf ? '<span class="you">Tú</span>' : ''}</strong><small>${esc(m.email)}</small></div></div></td><td><span class="badge ${m.role === 'org:admin' ? 'badge-admin' : ''}">${m.isOwner ? 'Propietario' : roleName(m.role)}</span></td><td>${data.canManage && !m.isOwner && !m.isSelf ? `<button class="table-link" data-edit-member="${esc(m.userId)}">Administrar ${icon('arrow')}</button>` : '<span class="muted">Activo</span>'}</td></tr>`).join('')}</tbody></table></div>${pagination(data.memberCount)}</section>`;
     if (data.canManage) content += `<section class="panel pending-panel"><div class="panel-heading"><h2>Invitaciones pendientes</h2><span>${data.invitations.length}</span></div>${data.invitations.length ? data.invitations.map(i => `<div class="invitation-row"><div><strong>${esc(i.email)}</strong><small>${roleName(i.role)} · Enviada ${date(i.createdAt)}</small></div><button class="table-link danger" data-revoke="${esc(i.id)}">Cancelar invitación</button></div>`).join('') : '<p class="panel-note">No hay invitaciones pendientes. Las nuevas aparecerán aquí hasta que las acepten.</p>'}</section>`;
     return content + `<section class="roles-explainer"><span>${icon('shield')}</span><div><h2>Accesos claros, desde el principio.</h2><p><strong>Administrador:</strong> invita personas, cambia roles y retira accesos del negocio.<br /><strong>Personal:</strong> puede consultar el equipo; no administra usuarios ni permisos.</p><small>Los roles pertenecen a este negocio. No dan acceso a la administración de VuelveClub.</small></div></section>`;
   }
   function openDialog(title, content) { dialog.innerHTML = `<div class="dialog-heading"><h2 id="dialog-title">${title}</h2><button class="icon-button" data-close aria-label="Cerrar ventana">${icon('close')}</button></div>${content}`; dialog.showModal(); }
-  function currentLocationKey() { return isAdminPage ? `/admin#${adminView()}` : `/equipo?${new URLSearchParams(location.search).get('negocio') || ''}`; }
+  function currentLocationKey() { return isAdminPage ? `/admin#${adminView()}` : `/equipo?${new URLSearchParams(location.search).get('negocio') || ''}#${businessView()}`; }
   function rememberView() { if (activeRoute) viewStates.set(activeRoute, { search, offset, scroll: scrollY }); }
   function navigate(href) {
     const url = new URL(href, location.href);
@@ -109,8 +115,12 @@ import { ReadCache } from './read-cache.js';
     } else {
       selectedOrg = data.business?.id || '';
       pendingInvitations = session.role === 'admin' ? [] : readCache.peek(cacheKey('my-invitations')) || [];
-      main.innerHTML = renderTeam();
-      if (session.role !== 'admin') loadInvitations();
+      if (businessView() !== 'equipo' && data.business) {
+        if (businessView() === 'clientes' && renderedView === currentLocationKey() && main.querySelector('#customer-results')) {
+          main.querySelector('#customer-results').innerHTML = customerResults(data, offset);
+        } else main.innerHTML = `${session.role === 'admin' ? '<a class="context-back" data-route href="/admin#negocios">← Volver a negocios</a>' : ''}<p class="business-name">${esc(data.business.name)}</p>${session.role !== 'admin' && data.businesses.length > 1 ? `<label class="business-select">Tu negocio<select id="business-select">${data.businesses.map(b => `<option value="${esc(b.id)}" ${b.id === data.business.id ? 'selected' : ''}>${esc(b.name)}</option>`).join('')}</select></label>` : ''}${businessTabs(data.business.id,businessView())}${businessView() === 'tarjeta' ? renderCard(data) : renderCustomers(data, search, offset)}`;
+      } else main.innerHTML = renderTeam();
+      if (session.role !== 'admin' && businessView() === 'equipo') loadInvitations();
     }
     renderedView = currentLocationKey();
     updateContext();
@@ -146,6 +156,7 @@ import { ReadCache } from './read-cache.js';
       if (!sameView || !main.querySelector('#admin-results')) { main.innerHTML = renderAdmin(true); renderedView = currentLocationKey(); }
       const currentStatus = document.querySelector('#list-status'); if (currentStatus) currentStatus.textContent = refresh ? 'Actualizando lista…' : search ? 'Buscando…' : 'Cargando…';
     } else if (!sameView) main.innerHTML = skeleton();
+    else if (businessView() === 'clientes' && status) status.textContent = refresh ? 'Actualizando lista…' : 'Buscando…';
     const refreshButton = document.querySelector('[data-action="refresh"]'); if (refreshButton) refreshButton.disabled = true;
     try {
       const result = await getRead(path, preloaded);
@@ -156,7 +167,7 @@ import { ReadCache } from './read-cache.js';
       if (sequence !== loadingId) return;
       const denied = ['SIGN_IN_REQUIRED', 'FORBIDDEN'].includes(error.message);
       if (denied) readCache.clear();
-      if (isAdminPage && sameView && !denied && document.querySelector('#list-status')) {
+      if (sameView && !denied && document.querySelector('#list-status')) {
         document.querySelector('#list-status').innerHTML = `No pudimos actualizar la lista. Se muestra la consulta anterior. <button class="table-link" data-action="refresh">Reintentar</button>`;
       } else {
         renderedView = ''; data = undefined;
@@ -257,7 +268,9 @@ import { ReadCache } from './read-cache.js';
   document.addEventListener('pointerover', prefetch);
   document.addEventListener('focusin', prefetch);
   addEventListener('pagehide', () => readCache.clear());
-  addEventListener('focus', () => { if (session && !mutation && loadedAt && Date.now() - loadedAt > 15000) load({ refresh: true }); });
+  addEventListener('focus', () => { if (document.querySelector('#live-card-form[data-dirty="true"],#live-card-form fieldset:disabled')) return; if (session && !mutation && loadedAt && Date.now() - loadedAt > 15000) load({ refresh: true }); });
   addEventListener('pageshow', event => { if (event.persisted) { readCache.clear(); data = undefined; renderedView = ''; boot(); } });
+  mountBusiness({ request: (...args) => window.VuelveAccount.request(...args), getData: () => data, getOrg: () => selectedOrg,
+    currentView: () => isAdminPage ? '' : businessView(), refresh: () => load({ refresh: true }), openDialog, toast });
   boot();
 })();

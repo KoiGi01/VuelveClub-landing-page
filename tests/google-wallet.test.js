@@ -27,6 +27,19 @@ function googleMock({ existing = false, failure } = {}) {
   };
   return { request, resources, calls };
 }
+
+test('live membership uses immutable business/design IDs and the real customer name without putting contact data in Wallet', async () => {
+  const mock=googleMock();const wallet=createWalletService({env,request:mock.request});
+  const member={cardId:'11111111-1111-4111-8111-111111111111',businessId:'org_one',name:'Maria Real',
+    design:{id:'22222222-2222-4222-8222-222222222222',name:'My Cafe',reward:'Coffee',visit_goal:10,background_color:'#CBDE2A',terms_url:'https://example.com/t',privacy_url:'https://example.com/p'}};
+  const result=await wallet.issueMember(member);
+  assert.equal(mock.resources[0].programName,'Recompensas');assert.equal(mock.resources[1].accountName,'Maria Real');
+  assert.match(mock.resources[1].barcode.value,/^VC-CARD-/);assert.ok(!JSON.stringify(mock.resources).includes('example.com@'));
+  const {payload}=await jwtVerify(result.saveUrl.split('/save/')[1],publicKey,{audience:'google'});
+  assert.equal(payload.payload.loyaltyObjects[0].id,mock.resources[1].id);assert.ok(!JSON.stringify(payload).includes('Maria'));
+  const previous=googleMock({existing:true});await createWalletService({env,request:previous.request}).issueMember(member);
+  assert.equal(previous.resources.length,0);
+});
 test('creates test-only loyalty resources and signs a compact Save to Wallet link', async () => {
   const mock = googleMock();
   const wallet = createWalletService({ env, request: mock.request });

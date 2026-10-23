@@ -46,6 +46,14 @@ test('team reads use current provider membership and expose only permitted field
   await assert.rejects(management.team(owner, 'org_two'), e => e.status === 403);
   assert.equal(mock.calls.some(c => c.path === '/organizations/org_two'), false);
 });
+
+test('business data access rechecks provider roles and rejects staff writes and cross-business access', async () => {
+  const mock=provider(),management=createManagement({env,request:mock.request});
+  assert.equal((await management.businessAccess(owner,'org_one',true)).canManage,true);
+  await assert.rejects(management.businessAccess(staff,'org_one',true),e=>e.code==='FORBIDDEN');
+  await assert.rejects(management.businessAccess(owner,'org_two'),e=>e.code==='FORBIDDEN');
+  assert.equal(mock.calls.some(c=>c.path==='/organizations/org_two'),false);
+});
 test('admin lists only fetch the selected resource and a known business team loads in parallel', async () => {
   const mock = provider(), management = createManagement({ env, request: mock.request });
   await management.adminData(platform, { view: 'businesses' });

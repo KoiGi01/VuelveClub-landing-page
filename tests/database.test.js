@@ -44,3 +44,18 @@ test('database failures are sanitized and missing schema is distinguished from a
   const empty = createDatabase({ env, request: async () => Response.json([], { headers: { 'content-range': '*/0' } }) });
   assert.deepEqual((await empty.read('org_one', 'customers')).records, []);
 });
+
+test('customer search cannot introduce another tenant filter and privileged RPC names are bounded', async()=>{
+  const calls=[];
+  const database=createDatabase({env,request:async(url,options)=>{calls.push({url:new URL(url),options});return Response.json([],{headers:{'content-range':'*/0'}});}});
+  await database.customers('org_one',{query:'Maria),business_id.eq.org_two,(email',offset:20});
+  assert.equal(calls[0].url.searchParams.get('business_id'),'eq.org_one');assert.equal(calls[0].url.searchParams.get('offset'),'20');
+  assert.ok(!calls[0].url.searchParams.get('or').includes('),business'));
+  await assert.rejects(database.rpc('exec_sql',{query:'drop table customers'}),e=>e.code==='INVALID_REQUEST');
+});
+test('Wallet recovery filters the card, person and design by the same business',async()=>{
+  const calls=[],cardId='11111111-1111-4111-8111-111111111111',designId='22222222-2222-4222-8222-222222222222';
+  const database=createDatabase({env,request:async input=>{const url=new URL(input);calls.push(url);return Response.json(url.pathname.endsWith('loyalty_cards')?[{id:cardId,design_id:designId}]:url.pathname.endsWith('customers')?[{name:'Alex'}]:[{id:designId}]);}});
+  assert.equal((await database.member('org_one',cardId)).cardId,cardId);
+  assert.equal(calls.length,3);assert.ok(calls.every(url=>url.searchParams.get('business_id')==='eq.org_one'));
+});
