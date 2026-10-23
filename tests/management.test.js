@@ -30,10 +30,11 @@ function provider() {
 }
 test('platform admin can read real counts while ordinary users cannot call the admin provider', async () => {
   const mock = provider(), management = createManagement({ env, request: mock.request });
-  await assert.rejects(management.adminOverview(owner), e => e.status === 403);
+  await assert.rejects(management.adminData(owner), e => e.status === 403);
   assert.equal(mock.calls.length, 0);
-  const result = await management.adminOverview(platform);
-  assert.equal(result.businessCount, 1); assert.equal(result.userCount, 3);
+  const result = await management.adminData(platform);
+  assert.equal(result.businessCount, 1);
+  assert.equal((await management.adminData(platform, { view: 'users' })).userCount, 3);
   assert.ok(!JSON.stringify(result).includes('NEVER EXPOSE'));
 });
 test('team reads use current provider membership and expose only permitted fields', async () => {
@@ -44,6 +45,20 @@ test('team reads use current provider membership and expose only permitted field
   assert.equal(mock.calls.some(c => c.path.endsWith('/invitations')), false);
   await assert.rejects(management.team(owner, 'org_two'), e => e.status === 403);
   assert.equal(mock.calls.some(c => c.path === '/organizations/org_two'), false);
+});
+test('admin lists only fetch the selected resource and a known business team loads in parallel', async () => {
+  const mock = provider(), management = createManagement({ env, request: mock.request });
+  await management.adminData(platform, { view: 'businesses' });
+  assert.deepEqual(mock.calls.map(c => c.path), ['/organizations']);
+  mock.calls.length = 0;
+  await management.adminData(platform, { view: 'users' });
+  assert.deepEqual(mock.calls.map(c => c.path).sort(), ['/users', '/users/count']);
+  mock.calls.length = 0;
+  await management.team(platform, 'org_one');
+  assert.equal(mock.calls.length, 3);
+  assert.equal(mock.calls.some(c => c.path.includes('/users/')), false);
+  assert.equal(mock.calls.some(c => c.path.includes('organization_memberships')), false);
+  await assert.rejects(management.adminData(platform, { view: 'unknown' }), e => e.code === 'INVALID_REQUEST');
 });
 test('staff cannot invite, change roles, remove members or revoke invitations', async () => {
   const mock = provider(), management = createManagement({ env, request: mock.request });
@@ -71,7 +86,7 @@ test('business creation requires platform admin and a verified matching owner em
   assert.equal(mock.calls.at(-1).body.created_by, 'user_owner');
 });
 test('missing configuration and HTTP failures never expose the provider secret or diagnostics', async () => {
-  await assert.rejects(createManagement({ env: {} }).adminOverview(platform), e => e.code === 'MANAGEMENT_NOT_CONFIGURED');
+  await assert.rejects(createManagement({ env: {} }).adminData(platform), e => e.code === 'MANAGEMENT_NOT_CONFIGURED');
   const handler = managementHandler(async () => { throw new ManagementError('FORBIDDEN', 403); }, { verify: async req => {
     if (!req.headers.authorization) throw Error(); return staff;
   } });

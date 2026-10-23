@@ -7,5 +7,5 @@ export default managementHandler(async ({ session, body, method, query, offset }
     return management.createBusiness(session, body);
   }
   if (typeof (query.search || '') !== 'string' || (query.search || '').length > 60) throw new ManagementError('INVALID_REQUEST');
-  return management.adminOverview(session, { query: query.search || '', offset });
+  return management.adminData(session, { view: query.view || 'businesses', query: query.search || '', offset });
 });

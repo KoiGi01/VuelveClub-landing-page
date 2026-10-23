@@ -23,16 +23,18 @@ replace the server environment value.
 
 ## Server endpoints
 
-GET `/api/admin`: platform-admin-only real business/user lists and counts. Search
-and 20-record pagination are supported. Responses omit provider metadata and
+GET `/api/admin?view=businesses|users`: platform-admin-only real business/user
+lists and counts. Only the selected resource is fetched. Search and 20-record
+pagination are supported. Responses omit provider metadata and
 private authentication fields. POST creates a business only for an existing
 account with an exactly matching verified owner email. Clerk assigns that owner
 the organization admin role. A stable owner/name-derived slug avoids duplicate
 organizations from retrying the same create request.
 
-GET `/api/team`: lists the caller's organization memberships (up to 100), then
-checks the caller's current membership for the requested business before loading
-its members. Platform admins may inspect any business. The member list is
+GET `/api/team`: lists the caller's current organization memberships (up to 100)
+and verifies access before loading a business. Platform admins may inspect any
+business without fetching their own membership selector. Organization details,
+members and permitted pending invitations are then loaded in parallel. The member list is
 paginated in groups of 20. Pending invitations (up to 100) are returned only to
 business administrators/platform admins.
 
@@ -56,6 +58,19 @@ sign-in/sign-up flow supports new staff accounts. After login the portal also
 lists the current user's pending invitations via Clerk JS. Accepting an invitation
 uses that invitation's `accept()` method and then refreshes server membership.
 No arbitrary ticket is accepted by a custom unauthenticated backend endpoint.
+
+The platform sidebar has two destinations: Negocios (the default) and Usuarios.
+Opening a business keeps the sidebar and Clerk runtime mounted, with a return
+link to Negocios. Back/forward preserves each view's search, pagination and scroll.
+The sample client workspace is separately labeled as an example. Personal pending
+invitations load in the background for business users, without blocking the team.
+
+Successful private reads use a bounded 15-second, per-user/session memory cache
+with in-flight deduplication. Nothing is persisted to browser storage or shared
+HTTP caches. Mutations, manual refresh, session changes and page exit invalidate
+snapshots; focus after 15 seconds refreshes the view. Every write still checks
+current server-side membership. Uncached lists show skeletons; refreshes preserve
+the visible list and search focus. Access-denied responses remove private rows.
 
 The old browser-only team simulator is no longer the team management entrypoint.
 The public sample workspace links to `/equipo`; test-card links from the portal
