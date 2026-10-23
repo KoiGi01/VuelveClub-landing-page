@@ -62,7 +62,7 @@ class SupportChat extends HTMLElement {
     window.visualViewport?.addEventListener('resize', this.viewport); this.viewport();
     this.onVisible = () => { if (!document.hidden) this.queueWelcome(); };
     document.addEventListener('visibilitychange', this.onVisible);
-    // The supplied sound can be configured once available. No audio request is made without it.
+    // Audio loads only when a notification plays, rather than during page load.
     const sound = document.querySelector('meta[name="vuelve-chat-notification-sound"]')?.content;
     if (sound) {
       const url = new URL(sound, location.origin);
@@ -106,7 +106,7 @@ class SupportChat extends HTMLElement {
       this.welcomeTimer = null;
       if (this.opened || document.hidden || this.greetingState()) return;
       this.greetingState('pending'); this.notify(`Hola, soy ${assistantName}. ¿En qué te ayudo?`);
-    }, 1600);
+    }, 10000);
   }
   updateUnread() {
     const launcher = this.$('.launcher'), badge = this.$('.unread-badge');

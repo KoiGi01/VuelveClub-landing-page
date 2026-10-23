@@ -12,7 +12,7 @@ The assistant's name is Mía, configured in `chat/contact.js`. Its header says
 Asistente virtual, and its initial greeting introduces Mía. The permanent team
 contact button has been removed.
 
-The local welcome arrives after 1.6 seconds on a visible page, without an AI
+The local welcome arrives after 10 seconds on a visible page, without an AI
 request. A lime unread count, a single short nudge and a seven-second preview
 announce it without opening the panel or taking focus. Opening the chat clears
 the count. A session-only greeting flag prevents repeated alerts during page
@@ -21,11 +21,12 @@ do not prevent using the widget. An assistant reply arriving after the user
 closes the panel also raises an unread notification. Reduced-motion preferences
 disable the animations.
 
-The notification sound is optional and awaits the supplied audio file. To enable
-it, add `<meta name="vuelve-chat-notification-sound" content="/assets/FILE.mp3">`
-to the landing and dashboard HTML. Only same-origin audio is accepted, and no
-audio is requested while the setting is absent. A browser-blocked sound can retry
-on the next user interaction within 12 seconds, while the message is still unread;
+The notification uses the supplied `confirm.wav`, preserved as
+`assets/chat-notification.wav` (0.22 seconds, PCM WAV), at 45% volume. The landing
+and dashboard configure its URL with the `vuelve-chat-notification-sound` meta
+tag. Only same-origin audio is accepted; it is loaded when a notification plays.
+A browser-blocked sound can retry on the next user interaction within 12 seconds,
+while the message is still unread;
 opening the chat cancels it. Missing audio never blocks the chat.
 
 ## Answers and navigation
@@ -121,6 +122,8 @@ Notification browser checks at 320/390/1440 px cover icon-only launchers, unread
 counts and previews, no unsolicited AI/audio requests, focus preservation,
 session deduplication, replies while closed, blocked storage and reduced motion.
 Mocked audio verifies autoplay rejection/retry and canceling playback on open.
+Real browser playback verifies the supplied WAV decodes on the landing and app,
+plays once at the ten-second alert, and is canceled if the chat was already read.
 Targeted accessibility scans pass for the closed notification and open panel.
 
 References:
