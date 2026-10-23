@@ -15,7 +15,7 @@ export function createHandler({ verify = verifySession, wallet = createWalletSer
     try { session = await verify(req); }
     catch { return res.status(401).json({ error: 'SIGN_IN_REQUIRED' }); }
     try {
-      if (Number(req.headers?.['content-length']) > 2048) throw new WalletError('INVALID_DESIGN', 400);
+      if (Number(req.headers?.['content-length']) > 4096) throw new WalletError('INVALID_DESIGN', 400);
       const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
       const design = validateDesign(body);
       return res.status(200).json(await wallet.issueTest(session.userId, design));

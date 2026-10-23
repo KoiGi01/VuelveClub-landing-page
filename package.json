@@ -8,7 +8,9 @@
     "test": "node --test"
   },
   "dependencies": {
+    "@vercel/blob": "^2.8.2",
     "jose": "^6.2.13",
-    "resend": "^4.0.0"
+    "resend": "^4.0.0",
+    "sharp": "^0.35.5"
   }
 }

@@ -6,3 +6,8 @@
 
 .google-pass-stamps{display:block;width:calc(100% + 48px);max-width:none;height:auto;margin:-14px -24px 16px;aspect-ratio:1032/812;object-fit:contain}
 @media(max-width:520px){.google-pass-stamps{width:calc(100% + 40px);margin-inline:-20px}}
+
+.wallet-logo-control{display:flex;gap:15px;align-items:center;padding:18px;background:var(--cream,#F9F7EF);border:1px solid var(--line,#e2dccc);border-radius:12px;margin:0 0 24px}.wallet-logo-control>img{width:64px;height:64px;object-fit:contain;border-radius:50%;background:#F9F7EF;flex-shrink:0}.wallet-logo-control>div{min-width:0}.wallet-logo-label{font-size:12px;font-weight:600}.wallet-logo-actions{display:flex;gap:15px;align-items:center;margin:8px 0}.wallet-logo-actions .small-link,.wallet-logo-signin{font-size:12px;text-decoration:underline;text-underline-offset:3px}.wallet-logo-actions [hidden],.wallet-logo-signin[hidden]{display:none}.wallet-logo-control p{font-size:10px;line-height:1.6;color:var(--muted);margin:0}.wallet-logo-control[aria-busy=true]>img{opacity:.35;animation:logo-upload-pulse 1.2s ease-in-out infinite}.google-pass-preview header img.wallet-uploaded-logo{padding:0}.google-pass-attribution{font-size:10px;opacity:.6;margin-top:19px}.wallet-logo-signin{margin-top:9px;display:inline-block}
+@keyframes logo-upload-pulse{50%{opacity:.7}}
+@media(max-width:520px){.wallet-logo-control{padding:13px;gap:11px}.wallet-logo-control>img{width:52px;height:52px}}
+@media(prefers-reduced-motion:reduce){.wallet-logo-control[aria-busy=true]>img{animation:none}}

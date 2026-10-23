@@ -25,6 +25,37 @@ background color, business name, visit goal and reward. It previews supported
 Google Wallet fields; Google controls the final native typography and layout.
 Saving a draft uses the current browser's sessionStorage, not a business database.
 
+Business logos: "Subir logo" accepts PNG, JPEG and WebP up to 2 MiB. POST
+/api/wallet-logo verifies a Clerk session before decoding the upload. Sharp
+rejects unsupported/animated images, limits decoded pixels, strips metadata,
+normalizes orientation and produces a 1000x1000 PNG with 15% padding on each side
+for Wallet's circular mask. The upload and image URLs are public branding assets,
+not a place for customer data.
+
+The public Vercel Blob store `vuelveclub-business-logos` is connected to this
+project for production and development. BLOB_READ_WRITE_TOKEN is server-only;
+never include it in a public config endpoint. The store connection also supplies
+BLOB_STORE_ID. Explicit token credentials are used when configured. Local secrets
+remain in ignored .env.local. No new database or consumer enrollment is enabled.
+
+Each immutable logo pathname contains a hash of the verified owner ID and a
+hash of the normalized image. Upload responses contain the public URL and a
+one-year signed capability bound to that user. Issuance verifies that capability
+and derives the logo URL from it; arbitrary URLs or another user's token cannot
+select the logo. Signing uses a separate domain-derived key from server-side
+Wallet credentials; rotating those credentials requires reuploading old logos.
+
+Test cards v3 use the business logo as programLogo, the business name as
+issuerName, and retain "Powered by vuelveclub" in card details. The downloadable
+QR poster retains its VuelveClub attribution. Removing a logo restores the
+VuelveClub placeholder. Preview and draft restore use the same public image.
+Generate a new card after changing the logo; existing v1/v2 test cards remain
+unchanged. A real public upload and Google class/object creation with that logo
+passed; saving into a user's actual Wallet still requires that user's Google
+session. Server tests cover normalization, bad files, account isolation, signing
+and API access; browser checks cover loading, retryable failures, save/reload,
+remove and mobile layouts.
+
 Test card version v2 adds outlined heart stamps using the supported `heroImage`
 field. Eight transparent 1032x812 PNGs cover goals 5/8/10/12 in dark and light
 ink. The preview uses the same PNG as the real card, choosing contrast based on

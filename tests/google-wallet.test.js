@@ -3,6 +3,8 @@ import { before, test } from 'node:test';
 import { generateKeyPair, exportPKCS8, jwtVerify } from 'jose';
 import { createWalletService, validateDesign, stampImage, WalletError } from '../lib/google-wallet.js';
 import { createHandler } from '../api/wallet-test.js';
+import { createLogoService } from '../lib/business-logo.js';
+import sharp from 'sharp';
 
 let env, publicKey;
 const design = { business: 'Cafe de prueba', reward: 'Un cafe', goal: 10, color: '#CBDE2A' };
@@ -63,6 +65,20 @@ test('resource IDs are stable for retries and isolated across users and designs'
   assert.notEqual((await wallet.issueTest('user_one', { ...design, color: '#3E2B49' })).objectId, first.objectId);
   assert.equal(mock.resources.length, 0);
   assert.equal(mock.calls.filter(c => c.url.includes('oauth2')).length, 1);
+});
+test('uses a signed business logo in Google Wallet and rejects another account using that logo', async () => {
+  const logoEnv = { ...env, BLOB_STORE_ID: 'store_test' };
+  const image = await sharp({ create: { width: 32, height: 32, channels: 4, background: '#CBDE2A' } }).png().toBuffer();
+  const logo = await createLogoService({ env: logoEnv, store: async path => ({ url: `https://example.public.blob.vercel-storage.com/${path}` }) })
+    .upload('user_one', image.toString('base64'));
+  const mock = googleMock(); const wallet = createWalletService({ env: logoEnv, request: mock.request });
+  await wallet.issueTest('user_one', { ...design, logoToken: logo.logoToken, logoUrl: 'https://untrusted.invalid' });
+  assert.equal(mock.resources[0].programLogo.sourceUri.uri, logo.logoUrl);
+  assert.equal(mock.resources[0].issuerName, design.business);
+  assert.match(mock.resources[0].textModulesData.at(-1).body, /Powered by vuelveclub/);
+  const calls = mock.calls.length;
+  await assert.rejects(wallet.issueTest('user_other', { ...design, logoToken: logo.logoToken }), error => error.code === 'INVALID_LOGO');
+  assert.equal(mock.calls.length, calls);
 });
 test('invalid design and missing credentials fail before contacting Google', async () => {
   for (const input of [null, {}, { ...design, goal: 999 }, { ...design, business: '<script>' },

@@ -178,7 +178,8 @@
     if (!form?.reportValidity()) return;
     const design = window.VuelveCardDesigner.draft();
     state.business = design.business;
-    state.config = { reward: design.reward, goal: design.goal, color: design.color };
+    const { business, ...config } = design;
+    state.config = config;
     save();
     const requestId = ++walletRequest;
     openModal('De tu negocio a tu Wallet.', '<div id="wallet-result" aria-busy="true"><div class="wallet-qr-skeleton" aria-hidden="true"></div><p class="qr-caption" role="status">Preparando tu tarjeta de prueba en Google Wallet…</p></div>', 'qr-modal wallet-test-modal');
@@ -196,7 +197,8 @@
       const messages = {
         NOT_CONFIGURED: 'La conexión con Google Wallet aún no está configurada.',
         GOOGLE_ACCESS_DENIED: 'Google no permitió crear la tarjeta. Revisaremos los permisos del emisor.',
-        INVALID_DESIGN: 'Revisa el nombre, la recompensa y el color de la tarjeta.'
+        INVALID_DESIGN: 'Revisa el nombre, la recompensa y el color de la tarjeta.',
+        INVALID_LOGO: 'Vuelve a subir tu logo desde esta cuenta antes de generar la tarjeta.'
       };
       target.setAttribute('aria-busy', 'false');
       target.innerHTML = `<div class="wallet-test-error" role="alert"><span class="eyebrow">${needsSignIn ? 'Tu cuenta de negocio' : 'Intentémoslo de nuevo'}</span><p>${needsSignIn ? 'Inicia sesión en la plataforma para crear tu tarjeta de prueba. Tu diseño queda guardado en este navegador.' : (messages[error.message] || 'No pudimos preparar la tarjeta. Tu diseño está guardado; vuelve a intentarlo.')}</p>${needsSignIn ? '<a class="button button-dark" href="https://app.vuelveclub.com/iniciar-sesion">Iniciar sesión</a><p class="qr-demo-note">Después de entrar, vuelve a Tu tarjeta para continuar.</p>' : '<button class="button button-dark" data-action="wallet-retry">Volver a intentar</button>'}</div>`;
@@ -255,6 +257,10 @@
   });
   document.addEventListener('click',event=>{if(event.target.closest('[data-dismiss]')&&modal.open)modal.close();});
   modal.addEventListener('click',event=>{if(event.target===modal){const r=modal.getBoundingClientRect();if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom)modal.close();}});
+  document.addEventListener('wallet-logo-change', event => {
+    delete state.config.logoUrl; delete state.config.logoToken;
+    Object.assign(state.config, event.detail); save();
+  });
   function updatePreview(){ window.VuelveCardDesigner.update(); }
   document.addEventListener('input',event=>{
     if(event.target.id==='customer-search'){filter=event.target.value;document.querySelector('#customer-results').innerHTML=customerRows();}
@@ -265,7 +271,7 @@
   document.addEventListener('submit',event=>{
     const form=event.target;if(!['design-form','settings-form','invite-form','access-form','recovery-form'].includes(form.id))return;event.preventDefault();
     const data=Object.fromEntries(new FormData(form));
-    if(form.id==='design-form'){const design=window.VuelveCardDesigner.draft();if(!design.reward||!design.business){toast('Escribe el negocio y la recompensa.');return;}state.business=design.business;state.config={reward:design.reward,goal:design.goal,color:design.color};save();toast('Diseño guardado en este navegador.');}
+    if(form.id==='design-form'){const design=window.VuelveCardDesigner.draft();if(!design.reward||!design.business){toast('Escribe el negocio y la recompensa.');return;}state.business=design.business;const {business,...config}=design;state.config=config;save();toast('Diseño guardado en este navegador.');}
     if(form.id==='settings-form'){if(!data.business.trim()||!data.branch.trim()){toast('Completa el nombre del negocio y la sucursal.');return;}state.business=data.business.trim();state.branch=data.branch.trim();save();render();toast('Los datos de tu negocio están al día.');}
     if(form.id==='invite-form'){
       const name=data.name.trim(),email=data.email.trim();const list=state.team;

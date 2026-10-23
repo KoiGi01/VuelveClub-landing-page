@@ -27,17 +27,26 @@
     });
     await deadline(window.Clerk.load({ signInUrl: '/iniciar-sesion', afterSignOutUrl: '/iniciar-sesion' }), 20000);
   }
+  async function authenticatedRequest(path, body) {
+    if (!initialization) initialization = deadline(initialize(), 30000).catch(error => { initialization = undefined; throw error; });
+    await initialization;
+    if (!window.Clerk.isSignedIn || !window.Clerk.session) throw new Error('SIGN_IN_REQUIRED');
+    const token = await deadline(window.Clerk.session.getToken(), 10000);
+    const response = await fetch(path, { method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify(body), signal: AbortSignal.timeout(55000) });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.error || 'GOOGLE_UNAVAILABLE');
+    return result;
+  }
   window.VuelveWallet = Object.freeze({
+    async uploadLogo(image) {
+      const result = await authenticatedRequest('/api/wallet-logo', { image });
+      if (typeof result.logoToken !== 'string' || !/^https:\/\/[a-z0-9]+\.public\.blob\.vercel-storage\.com\/business-logos\//.test(result.logoUrl || '')) throw new Error('LOGO_UPLOAD_FAILED');
+      return result;
+    },
     async issueTest(design) {
-      if (!initialization) initialization = deadline(initialize(), 30000).catch(error => { initialization = undefined; throw error; });
-      await initialization;
-      if (!window.Clerk.isSignedIn || !window.Clerk.session) throw new Error('SIGN_IN_REQUIRED');
-      const token = await deadline(window.Clerk.session.getToken(), 10000);
-      const response = await fetch('/api/wallet-test', { method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify(design), signal: AbortSignal.timeout(55000) });
-      const result = await response.json();
-      if (!response.ok) throw new Error(result.error || 'GOOGLE_UNAVAILABLE');
+      const result = await authenticatedRequest('/api/wallet-test', design);
       if (typeof result.saveUrl !== 'string' || !/^https:\/\/pay\.google\.com\/gp\/v\/save\/[A-Za-z0-9_.-]+$/.test(result.saveUrl)) throw new Error('GOOGLE_UNAVAILABLE');
       return result;
     }
