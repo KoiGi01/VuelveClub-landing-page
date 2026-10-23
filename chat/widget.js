@@ -22,7 +22,7 @@ class SupportChat extends HTMLElement {
     if (this.shadowRoot.childNodes.length) return;
     this.style.visibility = 'hidden'; this.setAttribute('data-private',''); this.classList.add('ph-no-capture');
     this.shadowRoot.innerHTML = `<link rel="stylesheet" href="/chat/widget.css" />
-      <button class="notification-preview" aria-controls="vc-chat-panel" hidden><span class="preview-name">${assistantName}<span>Asistente virtual</span></span><span class="preview-copy"></span>${icon('arrow')}</button>
+      <div class="notification-toast" hidden><button class="notification-preview" aria-controls="vc-chat-panel"><span class="preview-name">${assistantName}<span>Asistente virtual</span></span><span class="preview-copy"></span>${icon('arrow')}</button><button class="notification-dismiss" aria-label="Ocultar aviso de ${assistantName}">${icon('close')}</button></div>
       <button class="launcher" aria-label="Abrir chat con ${assistantName}" aria-expanded="false" aria-controls="vc-chat-panel"><span class="launcher-icon launcher-chat">${icon('chat')}</span><span class="launcher-icon launcher-close">${icon('close')}</span><span class="unread-badge" aria-hidden="true" hidden></span><span class="hint" aria-hidden="true">Hablemos</span></button>
       <span class="announcement sr-only" role="status" aria-live="polite" aria-atomic="true"></span>
       <section class="panel" id="vc-chat-panel" role="dialog" aria-modal="false" aria-labelledby="vc-chat-title" hidden>
@@ -40,6 +40,10 @@ class SupportChat extends HTMLElement {
     }, {once:true});
     this.$('.launcher').onclick = () => this.opened ? this.close() : this.open();
     this.$('.notification-preview').onclick = () => this.open();
+    this.$('.notification-dismiss').onclick = () => {
+      this.$('.notification-toast').hidden = true; this.pendingSound = false; this.notificationAudio?.pause();
+      if (this.greetingState() === 'pending') this.greetingState('dismissed');
+    };
     this.$('.close').onclick = () => this.close();
     this.shadowRoot.addEventListener('keydown', event => {
       if (event.key === 'Escape' && this.opened) { event.preventDefault(); event.stopPropagation(); this.close(); }
@@ -68,8 +72,9 @@ class SupportChat extends HTMLElement {
       const url = new URL(sound, location.origin);
       if (url.origin === location.origin) {
         this.notificationAudio = new Audio(url.href); this.notificationAudio.preload = 'none'; this.notificationAudio.volume = .45;
+        this.notificationAudio.addEventListener('playing', () => this.showNotification());
         this.retrySound = event => {
-          if (event.composedPath().some(node => node === this.$('.launcher') || node === this.$('.notification-preview'))) { this.pendingSound = false; return; }
+          if (event.composedPath().some(node => node === this.$('.launcher') || node === this.$('.notification-toast'))) { this.pendingSound = false; return; }
           if (event.isTrusted && this.pendingSound && this.unread && !document.hidden) this.playNotificationSound();
         };
         document.addEventListener('pointerdown', this.retrySound, {capture:true,passive:true});
@@ -100,7 +105,13 @@ class SupportChat extends HTMLElement {
     if (this.opened || !this.$('.launcher')) return;
     const state = this.greetingState();
     if (state === 'read') return;
-    if (state === 'pending') { if (!this.unread) { this.unread = 1; this.updateUnread(); } return; }
+    if (state === 'pending' || state === 'dismissed') {
+      if (!this.unread) {
+        this.unread = 1; this.updateUnread(); this.notificationText = `Hola, soy ${assistantName}. ¿En qué te ayudo?`;
+        if (state === 'pending') this.showNotification(false);
+      }
+      return;
+    }
     if (this.welcomeTimer || document.hidden) return;
     this.welcomeTimer = this.later(() => {
       this.welcomeTimer = null;
@@ -118,16 +129,22 @@ class SupportChat extends HTMLElement {
     if (this.opened) return;
     this.unread++; this.updateUnread();
     this.$('.announcement').textContent = `Nuevo mensaje de ${assistantName}.`;
-    this.$('.preview-copy').textContent = text.slice(0,160);
-    this.$('.notification-preview').hidden = false;
-    const launcher = this.$('.launcher'); launcher.classList.remove('is-notifying');
-    requestAnimationFrame(() => { if (!this.opened && this.isConnected) launcher.classList.add('is-notifying'); });
-    clearTimeout(this.previewTimer); clearTimeout(this.animationTimer); clearTimeout(this.soundExpiry);
-    this.noticeTimers.delete(this.previewTimer); this.noticeTimers.delete(this.animationTimer); this.noticeTimers.delete(this.soundExpiry);
-    this.previewTimer = this.later(() => { this.$('.notification-preview').hidden = true; }, 7000);
-    this.animationTimer = this.later(() => launcher.classList.remove('is-notifying'), 1200);
+    this.notificationText = text.slice(0,160); this.showNotification();
+    clearTimeout(this.soundExpiry); this.noticeTimers.delete(this.soundExpiry);
     this.soundExpiry = this.later(() => { this.pendingSound = false; }, 12000);
     this.playNotificationSound();
+  }
+  showNotification(animate=true) {
+    if (this.opened || !this.unread || !this.isConnected) return;
+    const toast = this.$('.notification-toast'), launcher = this.$('.launcher');
+    this.$('.preview-copy').textContent = this.notificationText; toast.hidden = false;
+    if (!animate) return;
+    clearTimeout(this.animationTimer); this.noticeTimers.delete(this.animationTimer);
+    launcher.classList.remove('is-notifying'); toast.classList.remove('is-notifying');
+    // Restart the visual cue when audio actually starts, including delayed autoplay retries.
+    void launcher.offsetWidth;
+    launcher.classList.add('is-notifying'); toast.classList.add('is-notifying');
+    this.animationTimer = this.later(() => { launcher.classList.remove('is-notifying'); toast.classList.remove('is-notifying'); }, 1200);
   }
   async playNotificationSound() {
     if (!this.notificationAudio || this.opened || !this.unread || document.hidden || this.playingSound) return;
@@ -138,10 +155,13 @@ class SupportChat extends HTMLElement {
   }
   open() {
     this.opened = true; this.unread = 0; this.pendingSound = false; this.greetingState('read'); this.updateUnread();
-    this.$('.notification-preview').hidden = true; this.$('.announcement').textContent = ''; this.$('.launcher').classList.remove('is-notifying');
+    this.$('.notification-toast').hidden = true; this.$('.notification-toast').classList.remove('is-notifying'); this.$('.announcement').textContent = ''; this.$('.launcher').classList.remove('is-notifying');
     this.$('.panel').hidden = false; this.notificationAudio?.pause();
     this.$('.launcher').setAttribute('aria-expanded','true');
-    requestAnimationFrame(() => (this.$('.contact-slot:not([hidden]) input:not([disabled])') || this.$('#vc-chat-question'))?.focus({preventScroll:true}));
+    requestAnimationFrame(() => {
+      const target = this.flow || matchMedia('(pointer:coarse), (max-width:600px)').matches ? this.$('.close') : this.$('#vc-chat-question');
+      target?.focus({preventScroll:true}); if (this.flow) this.scrollToPrompt();
+    });
   }
   close() {
     this.opened = false; this.$('.panel').hidden = true;
@@ -176,6 +196,12 @@ class SupportChat extends HTMLElement {
   scrollBottom(force=false) {
     if (force || !this.$('.contact-slot').contains(this.shadowRoot.activeElement)) requestAnimationFrame(() => { const body = this.$('.body'); body.scrollTop = body.scrollHeight; });
   }
+  scrollToPrompt() {
+    requestAnimationFrame(() => {
+      const body = this.$('.body'), prompt = this.$('.messages').lastElementChild;
+      if (prompt) body.scrollTop += prompt.getBoundingClientRect().top - body.getBoundingClientRect().top - 12;
+    });
+  }
   setBusy(value) {
     this.busy = value; this.$('.send').disabled = value;
     this.$('.typing').hidden = !value;
@@ -203,9 +229,10 @@ class SupportChat extends HTMLElement {
     this.history.push({role:'assistant',text:textOf(reply.parts).slice(0,1800)});
     if (reply.handoff) this.startDetails('support');
   }
-  clearFlow() { this.flow = null; this.$('.contact-slot').replaceChildren(); this.$('.contact-slot').hidden = true; }
+  clearFlow() { this.flow = null; this.$('.contact-slot').replaceChildren(); this.$('.contact-slot').hidden = true; this.$('.composer-wrap').hidden = false; }
   startDetails(purpose) {
     this.flow = {purpose, requestId:crypto.randomUUID(), payload:null};
+    this.$('.composer-wrap').hidden = true;
     if (window.Clerk?.isSignedIn && !this.profile.name) {
       const user = window.Clerk.user; this.profile.name = [user?.firstName,user?.lastName].filter(Boolean).join(' ');
       this.profile.email = user?.primaryEmailAddress?.emailAddress || '';
@@ -222,13 +249,13 @@ class SupportChat extends HTMLElement {
       this.profile.name = name; this.profile.email = email; this.flow.company = fields.company;
       if (this.flow.purpose === 'sales') this.showChannels(); else this.submitFlow('email');
     };
-    this.scrollBottom(true);
+    this.scrollToPrompt();
   }
   showChannels() {
     const slot = this.$('.contact-slot'); slot.replaceChildren();
     this.say(`Gracias, ${this.profile.name.split(/\s+/)[0]}. ¿Te gustaría que te mandemos información por correo o por WhatsApp?`);
     slot.innerHTML = `<div class="contact channel-choice"><div class="channel-options" role="group" aria-label="Cómo prefieres recibir información"><button class="channel-button" data-flow-action="email">Correo electrónico ${icon('arrow')}</button><button class="channel-button" data-flow-action="whatsapp">WhatsApp ${icon('arrow')}</button></div><p class="notice">Al elegir un canal, nos autorizas a responder a esta consulta por ese medio.</p><p class="status" role="status" aria-live="polite"></p><button class="contact-back" data-flow-action="edit" type="button">Cambiar mis datos</button><button class="contact-back" data-flow-action="skip" type="button">Ahora no</button></div>`;
-    this.scrollBottom(true);
+    this.scrollToPrompt();
   }
   showPhone() {
     this.say('Perfecto. ¿A qué número de WhatsApp te escribimos?');
@@ -241,7 +268,7 @@ class SupportChat extends HTMLElement {
       this.profile.phone = phone; this.submitFlow('whatsapp');
     };
     slot.querySelector('input').oninput = () => { if (this.flow) { this.flow.requestId = crypto.randomUUID(); this.flow.payload = null; } };
-    this.scrollBottom(true);
+    this.scrollToPrompt();
   }
   async flowAction(button) {
     if (!this.flow || this.busy) return;

@@ -13,10 +13,12 @@ Asistente virtual, and its initial greeting introduces Mía. The permanent team
 contact button has been removed.
 
 The local welcome arrives after 10 seconds on a visible page, without an AI
-request. A lime unread count, a single short nudge and a seven-second preview
-announce it without opening the panel or taking focus. Opening the chat clears
-the count. A session-only greeting flag prevents repeated alerts during page
-navigation while keeping an unread welcome badge until opened. Storage failures
+request. A lime unread count and a short shake of the launcher and preview
+announce it without opening the panel or taking focus. The preview stays visible
+until opened or explicitly dismissed; dismissing it keeps the unread count.
+Opening the chat clears the count. A session-only greeting flag prevents repeated
+alerts during page navigation while restoring the unread preview, or only its
+badge if dismissed. Storage failures
 do not prevent using the widget. An assistant reply arriving after the user
 closes the panel also raises an unread notification. Reduced-motion preferences
 disable the animations.
@@ -25,6 +27,9 @@ The notification uses the supplied `confirm.wav`, preserved as
 `assets/chat-notification.wav` (0.22 seconds, PCM WAV), at 45% volume. The landing
 and dashboard configure its URL with the `vuelve-chat-notification-sound` meta
 tag. Only same-origin audio is accepted; it is loaded when a notification plays.
+The audio's `playing` event re-shows and shakes the preview and launcher, so the
+visual cue stays synchronized even when loading or autoplay delays the sound.
+This does not increment the unread count a second time.
 A browser-blocked sound can retry on the next user interaction within 12 seconds,
 while the message is still unread;
 opening the chat cancels it. Missing audio never blocks the chat.
@@ -72,6 +77,12 @@ the visitor prefers information by email or WhatsApp. Only WhatsApp requests a
 phone number, normalized with country code. The visitor can decline contact and
 continue asking questions. Consent is requested before sending; opening the chat
 or entering the fields alone never sends an email.
+
+During contact intake the duplicate message composer is hidden. Compact fields
+leave room for Mía's explanation, and scrolling anchors the latest prompt rather
+than the bottom of the form. Opening the chat on mobile focuses the close button
+instead of an input, so reading does not summon the keyboard. The composer returns
+when intake is completed or skipped.
 
 Selecting a channel sends a chat lead to both owner/support inboxes with the
 question, transcript and chosen follow-up channel. This requests team follow-up;
@@ -124,6 +135,10 @@ session deduplication, replies while closed, blocked storage and reduced motion.
 Mocked audio verifies autoplay rejection/retry and canceling playback on open.
 Real browser playback verifies the supplied WAV decodes on the landing and app,
 plays once at the ten-second alert, and is canceled if the chat was already read.
+Regression checks cover sound delayed beyond the old preview timeout, synchronized
+shakes without duplicate counts, dismiss/read persistence, and complete intake
+visibility with its prompt on normal mobile and desktop screens. Short-screen
+checks keep the prompt in view and avoid opening the keyboard automatically.
 Targeted accessibility scans pass for the closed notification and open panel.
 
 References:
