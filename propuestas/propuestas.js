@@ -160,11 +160,17 @@
     try{await navigator.clipboard.writeText(input.value);toast('Enlace copiado. Listo para compartir.');}
     catch{input.focus();input.select();toast('Selecciona y copia el enlace de registro.');}
   }
-  function downloadQr() {
+  async function downloadQr() {
     const svg=document.querySelector('.business-qr svg');if(!svg)return;
-    const copy=svg.cloneNode(true);copy.setAttribute('xmlns','http://www.w3.org/2000/svg');copy.setAttribute('width','1024');copy.setAttribute('height','1024');
-    const url=URL.createObjectURL(new Blob([new XMLSerializer().serializeToString(copy)],{type:'image/svg+xml'}));
-    const link=document.createElement('a');link.href=url;link.download=`vuelveclub-qr-${window.VuelveDemo.businessId}.svg`;link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+    const button=document.querySelector('#modal [data-action="download-qr"]');
+    if(button?.disabled)return;
+    const original=button?.innerHTML;
+    if(button){button.disabled=true;button.setAttribute('aria-busy','true');button.textContent='Preparando diseño…';}
+    try{
+      await window.VuelveQRDownload.download({svg,business:document.querySelector('#modal .qr-business')?.textContent||state.business,testOnly:!!svg.closest('.wallet-save-qr')});
+      toast('Diseño con QR descargado. Listo para compartir o imprimir.');
+    }catch{toast('No pudimos descargar el diseño. Inténtalo de nuevo.');}
+    finally{if(button){button.disabled=false;button.removeAttribute('aria-busy');button.innerHTML=original;}}
   }
   let walletRequest = 0;
   async function testWallet() {

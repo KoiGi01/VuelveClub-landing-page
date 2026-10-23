@@ -40,6 +40,14 @@ displays that URL as a QR and offers an open link and QR download. The internal
 barcode identifies a test card; it is not an operational stamp or redemption
 credential. The Add QR is for a single test card, not business-wide enrollment.
 
+QR downloads are self-contained 1600x2100 PNG posters with the business name,
+brand colors, a scan instruction, and the "Powered by vuelveclub" logo footer.
+Fonts and the logo are rasterized into the file. Both the test-card and example
+enrollment downloads use this layout. Integer QR scaling preserves square
+modules and the existing white quiet zone. Test-card posters retain the 24-hour
+link-expiry notice. Both exported PNGs were decoded back to their original URLs
+during browser verification.
+
 Google accepted the first test loyalty class and object during verification.
 Saving to a real user's Android Wallet still requires that user's Google session
 and was not completed by automated checks. Browser tests cover presets, live
