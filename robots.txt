@@ -1,0 +1,8 @@
+# Allow public pages and assets to be crawled.
+# Login, dashboard, enrollment and proposal pages already declare noindex in HTML.
+# Keep them crawlable so search engines can read that directive.
+User-agent: *
+Allow: /
+Disallow: /api/
+
+Sitemap: https://www.vuelveclub.com/sitemap.xml
