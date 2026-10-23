@@ -90,8 +90,9 @@ acceptance, error retry, login redirects and mobile overflow. These browser chec
 use a Clerk test double; real end-to-end email delivery and invite acceptance
 still require the actual invited user's account.
 
-Loyalty customers and transactions still have no Supabase database. Visits,
-redemptions and customer lists in the sample workspace remain simulations.
+Supabase now has the initial business/customer/card/event schema; see
+`database.md`. Customer enrollment and transaction endpoints are not activated.
+Visits, redemptions and customer lists in the sample workspace remain simulations.
 The two business roles currently govern real team management; permission checks
 must be applied to future business data endpoints when those are implemented.
 The animated onboarding remains deferred.
