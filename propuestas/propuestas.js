@@ -116,7 +116,7 @@
     const rows=state.customers.filter(c=>window.VuelveDemo.matches(c,filter)&&(!onlyReady||c.stamps>=state.config.goal));
     return `<div class="customer-table"><div class="customer-table-head"><span>Cliente</span><span>Progreso de tarjeta</span><span>Visitas totales</span><span>Estado</span><span></span></div>${rows.length ? rows.map(c=>`<button class="customer-row" data-customer="${c.id}"><span class="customer-name"><span class="avatar ${c.color}">${initials(c.name)}</span><span><strong>${esc(c.name)}</strong><small>${esc(c.email)}</small></span></span><span class="customer-progress"><span class="progress-track"><i style="width:${Math.min(c.stamps/state.config.goal,1)*100}%"></i></span><small>${c.stamps} / ${state.config.goal} sellos</small></span><span class="visit-count">${c.visits}</span><span class="customer-state ${c.stamps>=state.config.goal?'has-reward':''}">${c.stamps>=state.config.goal?icon('gift')+'Premio listo':'En camino'}</span>${icon('chevron')}</button>`).join('') : `<div class="empty-state">${icon('search')}<h2>No encontramos coincidencias.</h2><p>Prueba otro nombre o cambia el filtro.</p></div>`}</div><div class="table-footer"><span>${rows.length} ${rows.length===1?'cliente':'clientes'}</span><span>Programa de ${esc(state.business)}</span></div>`;
   }
-  function designer() { return `${title('Programa de lealtad', 'Una tarjeta muy tuya.', 'Dale la personalidad de tu negocio. El gusto por volver ya lo pones tú.')}<div class="designer-grid"><form class="panel design-form" id="design-form"><div class="panel-heading"><h2>Los detalles hacen la diferencia.</h2></div><label for="reward-name">¿Qué premio van a disfrutar?</label><input id="reward-name" name="reward" maxlength="60" value="${esc(state.config.reward)}" required /><label for="stamp-goal">Sellos para ganar el premio</label><select id="stamp-goal" name="goal">${[5,8,10,12].map(n=>`<option value="${n}" ${state.config.goal===n?'selected':''}>${n} sellos</option>`).join('')}</select><label>El color de tu negocio</label><div class="color-options">${['#CBDE2A','#3E2B49','#E8502E','#F1ECDF'].map(c=>`<button type="button" class="color-swatch" style="--swatch:${c}" data-color="${c}" aria-label="Color ${c}" aria-pressed="${state.config.color.toLowerCase()===c.toLowerCase()}">${icon('check')}</button>`).join('')}<label class="custom-color" for="custom-color">${icon('plus')}<input id="custom-color" type="color" value="${state.config.color}" aria-label="Elegir otro color" /></label></div><div class="design-note">${icon('card')}<p>Una tarjeta, todos tus clientes. Disponible en Apple Wallet y Google Wallet.</p></div><button class="button button-dark" type="submit">Guardar diseño ${icon('check')}</button></form><section class="card-preview"><div class="preview-label"><span class="status-dot"></span>Vista previa en vivo</div><div id="live-pass">${pass(customer(1))}</div><p>Así llevarán tus clientes tu negocio en el celular.</p><div class="wallet-labels"><span>Apple Wallet</span><span>Google Wallet</span></div></section></div>`; }
+  function designer() { return window.VuelveCardDesigner.render(state); }
   function devices() { return `${title('Operación del negocio', 'El sello que los hace volver.', 'Asigna tus sellos a cada sucursal y ten su actividad a la mano.')}<div class="devices-grid"><section class="panel device-card"><div class="device-card-top"><span class="customer-state ${state.deviceActive?'has-reward':''}"><span class="status-dot ${state.deviceActive?'':'paused'}"></span>${state.deviceActive?'Activo':'Pausado'}</span><span class="mono">VC · 001</span></div><div class="stamp-object big-stamp" aria-hidden="true"><div class="stamp-top">${icon('nfc')}<span>vuelveclub.</span></div><div class="stamp-base"></div></div><h2>Sello principal</h2><p>${esc(state.branch)}</p><div class="device-facts"><span>Responsable<strong>Ana Martínez</strong></span><span>Última lectura<strong>Hace 3 minutos</strong></span></div><div class="device-actions"><button class="button button-dark" data-action="device-test" ${!state.deviceActive?'disabled':''}>${icon('nfc')}Probar lectura</button><button class="button button-outline" data-action="device-toggle">${state.deviceActive?'Pausar sello':'Activar sello'}</button></div></section><section class="device-explainer"><span class="eyebrow">El trabajo del sello</span><h2>Menos pantallas.<br />Más buenos momentos.</h2><ol class="device-steps"><li><span>01</span><div><h3>Tu cliente vuelve</h3><p>Su tarjeta ya está en el celular.</p></div></li><li><span>02</span><div><h3>El sello registra la visita</h3><p>Cada lectura corresponde a un movimiento.</p></div></li><li><span>03</span><div><h3>La tarjeta se actualiza</h3><p>Un paso más cerca de su recompensa.</p></div></li></ol><p class="prototype-detail">Esta es una representación del sello. La lectura de esta propuesta es simulada; el flujo físico se validará con el dispositivo comprado.</p><a class="text-link" href="#mostrador">Abrir el respaldo desde el panel ${icon('arrow')}</a></section></div>`; }
   function counter() { const c=customer(selected);return `${title('Mostrador', 'Registrar una visita.', 'Busca al cliente y añade su sello o entrega su recompensa.', `<button class="button button-outline" data-action="new-customer">${icon('qr')}Nuevo cliente</button>`)}<div class="counter-grid"><section class="panel counter-customers"><div class="panel-heading"><h2>¿Quién volvió hoy?</h2></div><label class="search-input counter-search">${icon('search')}<input id="counter-search" type="search" placeholder="Nombre, correo o celular" aria-label="Buscar cliente para registrar visita" value="${esc(counterFilter)}" aria-controls="counter-results" /><kbd>/</kbd></label><div id="counter-results">${counterRows()}</div></section><section class="counter-workspace"><div class="counter-person-title"><span class="eyebrow">${esc(c.name)}</span><h2>${c.stamps>=state.config.goal?'Su premio está listo.':'Una vuelta más cuenta.'}</h2></div>${pass(c)}<div class="counter-buttons"><button class="button button-dark" data-stamp="${c.id}">${icon('plus')}Registrar visita</button><button class="button button-outline" data-redeem="${c.id}" ${c.stamps<state.config.goal?'disabled':''}>${icon('gift')}Canjear premio</button></div><p class="counter-hint">${c.stamps>=state.config.goal?`${Math.floor(c.stamps/state.config.goal)} premio disponible. Confirma el canje al entregar la recompensa.`:`Le ${state.config.goal-c.stamps===1?'falta 1 visita':`faltan ${state.config.goal-c.stamps} visitas`} para ${esc(state.config.reward.toLowerCase())}.`}</p></section></div>`; }
   function counterRows() {
@@ -166,6 +166,36 @@
     const url=URL.createObjectURL(new Blob([new XMLSerializer().serializeToString(copy)],{type:'image/svg+xml'}));
     const link=document.createElement('a');link.href=url;link.download=`vuelveclub-qr-${window.VuelveDemo.businessId}.svg`;link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
   }
+  let walletRequest = 0;
+  async function testWallet() {
+    const form = document.querySelector('#design-form');
+    if (!form?.reportValidity()) return;
+    const design = window.VuelveCardDesigner.draft();
+    state.business = design.business;
+    state.config = { reward: design.reward, goal: design.goal, color: design.color };
+    save();
+    const requestId = ++walletRequest;
+    openModal('De tu negocio a tu Wallet.', '<div id="wallet-result" aria-busy="true"><div class="wallet-qr-skeleton" aria-hidden="true"></div><p class="qr-caption" role="status">Preparando tu tarjeta de prueba en Google Wallet…</p></div>', 'qr-modal wallet-test-modal');
+    try {
+      const result = await window.VuelveWallet.issueTest(design);
+      const target = document.querySelector('#wallet-result');
+      if (!modal.open || !target || requestId !== walletRequest) return;
+      const qr = qrcode(0, 'L'); qr.addData(result.saveUrl); qr.make();
+      target.setAttribute('aria-busy', 'false');
+      target.innerHTML = `<span class="wallet-test-badge">Tarjeta de prueba · Alex Demo</span><p class="modal-description qr-intro">Escanea con tu celular y agrega esta tarjeta a Google Wallet.</p><div class="business-qr wallet-save-qr" role="img" aria-label="QR para agregar la tarjeta de prueba a Google Wallet">${qr.createSvgTag({ cellSize: 4, margin: 20, scalable: true })}</div><p class="qr-business">${esc(design.business)}</p><p class="qr-caption">${esc(design.reward)} · ${design.goal} visitas</p><div class="qr-actions"><a class="button button-dark" href="${esc(result.saveUrl)}" target="_blank" rel="noopener noreferrer">Abrir en Google Wallet ↗</a><button class="button button-outline" data-action="download-qr">${icon('download')}Descargar QR</button></div><p class="qr-demo-note">Este QR agrega la misma tarjeta de prueba. No es el registro para clientes. El enlace dura 24 horas; puedes generar otro aquí.</p>`;
+    } catch (error) {
+      const target = document.querySelector('#wallet-result');
+      if (!modal.open || !target || requestId !== walletRequest) return;
+      const needsSignIn = ['SIGN_IN_REQUIRED', 'APP_ORIGIN_REQUIRED'].includes(error.message);
+      const messages = {
+        NOT_CONFIGURED: 'La conexión con Google Wallet aún no está configurada.',
+        GOOGLE_ACCESS_DENIED: 'Google no permitió crear la tarjeta. Revisaremos los permisos del emisor.',
+        INVALID_DESIGN: 'Revisa el nombre, la recompensa y el color de la tarjeta.'
+      };
+      target.setAttribute('aria-busy', 'false');
+      target.innerHTML = `<div class="wallet-test-error" role="alert"><span class="eyebrow">${needsSignIn ? 'Tu cuenta de negocio' : 'Intentémoslo de nuevo'}</span><p>${needsSignIn ? 'Inicia sesión en la plataforma para crear tu tarjeta de prueba. Tu diseño queda guardado en este navegador.' : (messages[error.message] || 'No pudimos preparar la tarjeta. Tu diseño está guardado; vuelve a intentarlo.')}</p>${needsSignIn ? '<a class="button button-dark" href="https://app.vuelveclub.com/iniciar-sesion">Iniciar sesión</a><p class="qr-demo-note">Después de entrar, vuelve a Tu tarjeta para continuar.</p>' : '<button class="button button-dark" data-action="wallet-retry">Volver a intentar</button>'}</div>`;
+    }
+  }
   if('BroadcastChannel' in window){
     const channel=new BroadcastChannel('vuelveclub-enrollment-demo');
     channel.addEventListener('message',event=>{
@@ -206,6 +236,7 @@
     if(action==='share-card'||action==='new-customer')shareCard();
     if(action==='copy-enrollment')copyEnrollment();
     if(action==='download-qr')downloadQr();
+    if(action==='wallet-test'||action==='wallet-retry')testWallet();
     if(action==='ready-filter'){onlyReady=!onlyReady;render();}
     if(action==='business')openModal('Tu lugar de siempre.',`<div class="business-detail">${icon('coffee')}<h3>${esc(state.business)}</h3><p>${esc(state.branch)} · Mérida</p></div><a class="button button-dark full-width" href="#configuracion" data-dismiss>Editar negocio ${icon('arrow')}</a>`);
     if(action==='account')openModal('Hola, Ana.',`<div class="account-options"><a href="#configuracion" data-dismiss>${icon('settings')}Configuración del negocio ${icon('arrow')}</a><a href="#acceso" data-dismiss>${icon('logout')}Ver propuesta de acceso ${icon('arrow')}</a><a href="/soporte" target="_blank" rel="noopener">${icon('help')}Centro de ayuda ${icon('arrow')}</a></div>`);
@@ -218,7 +249,7 @@
   });
   document.addEventListener('click',event=>{if(event.target.closest('[data-dismiss]')&&modal.open)modal.close();});
   modal.addEventListener('click',event=>{if(event.target===modal){const r=modal.getBoundingClientRect();if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom)modal.close();}});
-  function updatePreview(){const reward=document.querySelector('#reward-name').value||'Tu recompensa';const goal=Number(document.querySelector('#stamp-goal').value);const color=document.querySelector('#custom-color').value;document.querySelector('#live-pass').innerHTML=pass(customer(1),false,{reward,goal,color});}
+  function updatePreview(){ window.VuelveCardDesigner.update(); }
   document.addEventListener('input',event=>{
     if(event.target.id==='customer-search'){filter=event.target.value;document.querySelector('#customer-results').innerHTML=customerRows();}
     if(event.target.id==='counter-search'){counterFilter=event.target.value;document.querySelector('#counter-results').innerHTML=counterRows();}
@@ -228,7 +259,7 @@
   document.addEventListener('submit',event=>{
     const form=event.target;if(!['design-form','settings-form','invite-form','access-form','recovery-form'].includes(form.id))return;event.preventDefault();
     const data=Object.fromEntries(new FormData(form));
-    if(form.id==='design-form'){const reward=data.reward.trim();if(!reward){toast('Escribe el nombre de la recompensa.');return;}state.config={reward,goal:Number(data.goal),color:document.querySelector('#custom-color').value};save();toast('Diseño guardado en la propuesta.');}
+    if(form.id==='design-form'){const design=window.VuelveCardDesigner.draft();if(!design.reward||!design.business){toast('Escribe el negocio y la recompensa.');return;}state.business=design.business;state.config={reward:design.reward,goal:design.goal,color:design.color};save();toast('Diseño guardado en este navegador.');}
     if(form.id==='settings-form'){if(!data.business.trim()||!data.branch.trim()){toast('Completa el nombre del negocio y la sucursal.');return;}state.business=data.business.trim();state.branch=data.branch.trim();save();render();toast('Los datos de tu negocio están al día.');}
     if(form.id==='invite-form'){
       const name=data.name.trim(),email=data.email.trim();const list=state.team;

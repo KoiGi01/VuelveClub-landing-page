@@ -131,6 +131,12 @@
           caption.className = 'auth-intro admin-preview-caption';
           caption.textContent = 'Explora el negocio de ejemplo. Tu sesión de administrador se mantiene.';
           widget.append(preview, caption);
+        } else {
+          const designer = document.createElement('a');
+          designer.className = 'button button-dark admin-preview-button';
+          designer.href = '/propuestas/ritmo#tarjeta';
+          designer.textContent = 'Diseñar tarjeta de prueba';
+          widget.append(designer);
         }
         unmount = () => window.Clerk.unmountUserButton(account);
         window.Clerk.mountUserButton(account);

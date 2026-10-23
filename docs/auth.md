@@ -89,8 +89,11 @@ banner and a link back to the account. This is a preview of a business dashboard
 not impersonation of an actual customer. It retains the Clerk session and uses
 separate sessionStorage (vc-client-preview-v1), leaving the normal prototype
 state untouched. The proposal routes still contain public example data only.
-Ordinary members see their signed-in account and the pending-business-access
-message until onboarding and tenant data are implemented.
+Ordinary members see their signed-in account, the pending-business-access
+message, and a "Diseñar tarjeta de prueba" link. This leads to the example
+dashboard's card editor. Its test-card API verifies the user's session and
+isolates Google resources by user ID. It does not enable real tenant operations;
+onboarding and tenant data are still pending.
 
 Role tests use real generated RSA keys and signed tokens to cover admin/member
 policy, forged claims, tampering, expiry, invalid origin/issuer, pending sessions

@@ -1,4 +1,7 @@
 {
+  "functions": {
+    "api/wallet-test.js": { "maxDuration": 60 }
+  },
   "redirects": [
     { "source": "/", "has": [{ "type": "host", "value": "app.vuelveclub.com" }], "destination": "/iniciar-sesion", "permanent": false },
     { "source": "/support", "destination": "/soporte", "permanent": true }
