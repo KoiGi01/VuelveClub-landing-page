@@ -1,8 +1,9 @@
 # Customer support chat and email
 
-The floating help button uses the supplied support avatar, plum/cream/lime palette
-and Fredoka/Hanken Grotesk typography. The original PNG is preserved; the widget
-and support page use the smaller WebP. The widget is a shadow-DOM component on the
+The floating help button uses a chat bubble icon, plum/cream/lime palette
+and Fredoka/Hanken Grotesk typography. Mía's supplied portrait appears inside the
+open chat only. The original PNG is preserved; the widget header and support page
+use the smaller WebP. The widget is a shadow-DOM component on the
 landing and business portal only. Login, support, enrollment and proposal pages
 do not load it; a runtime route guard also prevents mounting there. The panel
 opens on demand, with keyboard Escape, a labeled conversation log, mobile viewport
@@ -10,6 +11,22 @@ sizing and reduced motion. No AI request is made until the visitor asks a questi
 The assistant's name is Mía, configured in `chat/contact.js`. Its header says
 Asistente virtual, and its initial greeting introduces Mía. The permanent team
 contact button has been removed.
+
+The local welcome arrives after 1.6 seconds on a visible page, without an AI
+request. A lime unread count, a single short nudge and a seven-second preview
+announce it without opening the panel or taking focus. Opening the chat clears
+the count. A session-only greeting flag prevents repeated alerts during page
+navigation while keeping an unread welcome badge until opened. Storage failures
+do not prevent using the widget. An assistant reply arriving after the user
+closes the panel also raises an unread notification. Reduced-motion preferences
+disable the animations.
+
+The notification sound is optional and awaits the supplied audio file. To enable
+it, add `<meta name="vuelve-chat-notification-sound" content="/assets/FILE.mp3">`
+to the landing and dashboard HTML. Only same-origin audio is accepted, and no
+audio is requested while the setting is absent. A browser-blocked sound can retry
+on the next user interaction within 12 seconds, while the message is still unread;
+opening the chat cancels it. Missing audio never blocks the chat.
 
 ## Answers and navigation
 
@@ -100,6 +117,11 @@ and hidden login widgets. Live Gemini tests covered a
 normal answer, follow-up, unsupported functionality, human handoff and prompt
 injection. Resend credentials/domain verification were checked read-only; no
 sample tickets or leads were emailed to the user's inboxes during QA.
+Notification browser checks at 320/390/1440 px cover icon-only launchers, unread
+counts and previews, no unsolicited AI/audio requests, focus preservation,
+session deduplication, replies while closed, blocked storage and reduced motion.
+Mocked audio verifies autoplay rejection/retry and canceling playback on open.
+Targeted accessibility scans pass for the closed notification and open panel.
 
 References:
 - https://ai.google.dev/gemini-api/docs/models

@@ -2,7 +2,7 @@ import {helpLink} from './links.js';
 import {assistantName, normalizePhone, chatVisible} from './contact.js';
 
 const icon = name => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${{
-  chat: '<path d="M4 4h16v12H9l-5 4V4Z"/><path d="M8 9h8m-8 3h5"/>',
+  chat: '<path d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H8l-4 3v-7.5A7.5 7.5 0 0 1 11.5 7h1A7.5 7.5 0 0 1 20 11.5Z" transform="translate(0 -3)"/><path d="M8.5 9.5h7m-7 3h4"/>',
   close: '<path d="m6 6 12 12M6 18 18 6"/>', arrow: '<path d="M5 12h14m-6-6 6 6-6 6"/>',
   send: '<path d="m12 19 0-14m-6 6 6-6 6 6"/>'
 }[name]}</svg>`;
@@ -16,12 +16,15 @@ class SupportChat extends HTMLElement {
     super(); this.attachShadow({mode:'open'});
     this.history = []; this.transcript = []; this.busy = false; this.opened = false;
     this.profile = {name:'', email:'', phone:''}; this.salesReady = false; this.flow = null;
+    this.unread = 0; this.welcomeState = ''; this.noticeTimers = new Set();
   }
   connectedCallback() {
     if (this.shadowRoot.childNodes.length) return;
     this.style.visibility = 'hidden'; this.setAttribute('data-private',''); this.classList.add('ph-no-capture');
     this.shadowRoot.innerHTML = `<link rel="stylesheet" href="/chat/widget.css" />
-      <button class="launcher" aria-label="Abrir chat con ${assistantName}" aria-expanded="false" aria-controls="vc-chat-panel">${portrait}<span class="launcher-badge">${icon('chat')}</span><span class="hint" aria-hidden="true">Hola, soy ${assistantName}</span></button>
+      <button class="notification-preview" aria-controls="vc-chat-panel" hidden><span class="preview-name">${assistantName}<span>Asistente virtual</span></span><span class="preview-copy"></span>${icon('arrow')}</button>
+      <button class="launcher" aria-label="Abrir chat con ${assistantName}" aria-expanded="false" aria-controls="vc-chat-panel"><span class="launcher-icon launcher-chat">${icon('chat')}</span><span class="launcher-icon launcher-close">${icon('close')}</span><span class="unread-badge" aria-hidden="true" hidden></span><span class="hint" aria-hidden="true">Hablemos</span></button>
+      <span class="announcement sr-only" role="status" aria-live="polite" aria-atomic="true"></span>
       <section class="panel" id="vc-chat-panel" role="dialog" aria-modal="false" aria-labelledby="vc-chat-title" hidden>
         <div class="header">${portrait}<div class="heading"><h2 id="vc-chat-title">${assistantName}</h2><p>Asistente virtual</p></div><button class="close" aria-label="Cerrar chat">${icon('close')}</button></div>
         <div class="body"><div class="welcome"><h3>Hola, soy ${assistantName}.</h3><p>Tu asistente virtual de VuelveClub.<br />¿En qué te ayudo?</p>
@@ -30,12 +33,13 @@ class SupportChat extends HTMLElement {
         </div>
         <div class="composer-wrap"><form class="composer"><label class="sr-only" for="vc-chat-question">Escribe tu pregunta a ${assistantName}</label><textarea id="vc-chat-question" rows="1" maxlength="1200" placeholder="Escribe tu pregunta…" required></textarea><button class="send" type="submit" aria-label="Enviar pregunta">${icon('send')}</button></form><div class="composer-footer"><span class="powered">vuelveclub<i>.</i></span></div></div>
       </section>`;
-    const reveal = () => { this.style.visibility = 'visible'; };
+    const reveal = () => { this.style.visibility = 'visible'; this.queueWelcome(); };
     this.$('link').addEventListener('load', reveal, {once:true});
     this.$('link').addEventListener('error', () => {
-      this.shadowRoot.innerHTML = '<a href="/soporte" style="position:fixed;bottom:20px;right:20px;z-index:2147483000;background:#3e2b49;color:#f9f7ef;border-radius:40px;padding:14px 20px;font:600 14px sans-serif;text-decoration:none">Ayuda ↗</a>'; reveal();
+      this.shadowRoot.innerHTML = '<a href="/soporte" style="position:fixed;bottom:20px;right:20px;z-index:2147483000;background:#3e2b49;color:#f9f7ef;border-radius:40px;padding:14px 20px;font:600 14px sans-serif;text-decoration:none">Ayuda ↗</a>'; this.style.visibility = 'visible';
     }, {once:true});
     this.$('.launcher').onclick = () => this.opened ? this.close() : this.open();
+    this.$('.notification-preview').onclick = () => this.open();
     this.$('.close').onclick = () => this.close();
     this.shadowRoot.addEventListener('keydown', event => {
       if (event.key === 'Escape' && this.opened) { event.preventDefault(); event.stopPropagation(); this.close(); }
@@ -56,17 +60,92 @@ class SupportChat extends HTMLElement {
     });
     this.viewport = () => this.style.setProperty('--chat-height', Math.max(280,(window.visualViewport?.height || innerHeight)-115)+'px');
     window.visualViewport?.addEventListener('resize', this.viewport); this.viewport();
+    this.onVisible = () => { if (!document.hidden) this.queueWelcome(); };
+    document.addEventListener('visibilitychange', this.onVisible);
+    // The supplied sound can be configured once available. No audio request is made without it.
+    const sound = document.querySelector('meta[name="vuelve-chat-notification-sound"]')?.content;
+    if (sound) {
+      const url = new URL(sound, location.origin);
+      if (url.origin === location.origin) {
+        this.notificationAudio = new Audio(url.href); this.notificationAudio.preload = 'none'; this.notificationAudio.volume = .45;
+        this.retrySound = event => {
+          if (event.composedPath().some(node => node === this.$('.launcher') || node === this.$('.notification-preview'))) { this.pendingSound = false; return; }
+          if (event.isTrusted && this.pendingSound && this.unread && !document.hidden) this.playNotificationSound();
+        };
+        document.addEventListener('pointerdown', this.retrySound, {capture:true,passive:true});
+        document.addEventListener('keydown', this.retrySound, true);
+      }
+    }
   }
-  disconnectedCallback() { window.visualViewport?.removeEventListener('resize', this.viewport); }
+  disconnectedCallback() {
+    window.visualViewport?.removeEventListener('resize', this.viewport);
+    document.removeEventListener('visibilitychange', this.onVisible);
+    document.removeEventListener('pointerdown', this.retrySound, true); document.removeEventListener('keydown', this.retrySound, true);
+    this.noticeTimers.forEach(clearTimeout); this.noticeTimers.clear(); this.notificationAudio?.pause();
+  }
   $(selector) { return this.shadowRoot.querySelector(selector); }
+  later(callback, delay) {
+    const timer = setTimeout(() => { this.noticeTimers.delete(timer); if (this.isConnected) callback(); }, delay);
+    this.noticeTimers.add(timer); return timer;
+  }
+  greetingState(value) {
+    if (value) this.welcomeState = value;
+    try {
+      if (value) sessionStorage.setItem('vc-chat-greeting', value);
+      else this.welcomeState = sessionStorage.getItem('vc-chat-greeting') || this.welcomeState;
+    } catch { /* The greeting still works when browser storage is unavailable. */ }
+    return this.welcomeState;
+  }
+  queueWelcome() {
+    if (this.opened || !this.$('.launcher')) return;
+    const state = this.greetingState();
+    if (state === 'read') return;
+    if (state === 'pending') { if (!this.unread) { this.unread = 1; this.updateUnread(); } return; }
+    if (this.welcomeTimer || document.hidden) return;
+    this.welcomeTimer = this.later(() => {
+      this.welcomeTimer = null;
+      if (this.opened || document.hidden || this.greetingState()) return;
+      this.greetingState('pending'); this.notify(`Hola, soy ${assistantName}. ¿En qué te ayudo?`);
+    }, 1600);
+  }
+  updateUnread() {
+    const launcher = this.$('.launcher'), badge = this.$('.unread-badge');
+    badge.hidden = !this.unread; badge.textContent = this.unread > 9 ? '9+' : String(this.unread);
+    launcher.classList.toggle('has-unread', this.unread > 0);
+    launcher.setAttribute('aria-label', this.opened ? 'Cerrar chat' : `Abrir chat con ${assistantName}${this.unread ? `. ${this.unread} ${this.unread === 1 ? 'mensaje sin leer' : 'mensajes sin leer'}` : ''}`);
+  }
+  notify(text) {
+    if (this.opened) return;
+    this.unread++; this.updateUnread();
+    this.$('.announcement').textContent = `Nuevo mensaje de ${assistantName}.`;
+    this.$('.preview-copy').textContent = text.slice(0,160);
+    this.$('.notification-preview').hidden = false;
+    const launcher = this.$('.launcher'); launcher.classList.remove('is-notifying');
+    requestAnimationFrame(() => { if (!this.opened && this.isConnected) launcher.classList.add('is-notifying'); });
+    clearTimeout(this.previewTimer); clearTimeout(this.animationTimer); clearTimeout(this.soundExpiry);
+    this.noticeTimers.delete(this.previewTimer); this.noticeTimers.delete(this.animationTimer); this.noticeTimers.delete(this.soundExpiry);
+    this.previewTimer = this.later(() => { this.$('.notification-preview').hidden = true; }, 7000);
+    this.animationTimer = this.later(() => launcher.classList.remove('is-notifying'), 1200);
+    this.soundExpiry = this.later(() => { this.pendingSound = false; }, 12000);
+    this.playNotificationSound();
+  }
+  async playNotificationSound() {
+    if (!this.notificationAudio || this.opened || !this.unread || document.hidden || this.playingSound) return;
+    this.pendingSound = false; this.playingSound = true;
+    try { this.notificationAudio.currentTime = 0; await this.notificationAudio.play(); }
+    catch (error) { this.pendingSound = error.name === 'NotAllowedError'; }
+    finally { this.playingSound = false; }
+  }
   open() {
-    this.opened = true; this.$('.panel').hidden = false;
-    this.$('.launcher').setAttribute('aria-expanded','true'); this.$('.launcher').setAttribute('aria-label','Cerrar chat');
+    this.opened = true; this.unread = 0; this.pendingSound = false; this.greetingState('read'); this.updateUnread();
+    this.$('.notification-preview').hidden = true; this.$('.announcement').textContent = ''; this.$('.launcher').classList.remove('is-notifying');
+    this.$('.panel').hidden = false; this.notificationAudio?.pause();
+    this.$('.launcher').setAttribute('aria-expanded','true');
     requestAnimationFrame(() => (this.$('.contact-slot:not([hidden]) input:not([disabled])') || this.$('#vc-chat-question'))?.focus({preventScroll:true}));
   }
   close() {
     this.opened = false; this.$('.panel').hidden = true;
-    this.$('.launcher').setAttribute('aria-expanded','false'); this.$('.launcher').setAttribute('aria-label',`Abrir chat con ${assistantName}`);
+    this.$('.launcher').setAttribute('aria-expanded','false'); this.updateUnread();
     this.$('.launcher').focus({preventScroll:true});
   }
   linkContext() {
@@ -90,6 +169,7 @@ class SupportChat extends HTMLElement {
     }
     row.append(bubble); this.$('.messages').append(row); this.transcript.push({role, text:textOf(parts)});
     if (this.transcript.length > 40) { this.transcript.shift(); this.$('.messages').firstElementChild?.remove(); }
+    if (role === 'assistant' && !this.opened) this.notify(textOf(parts));
     this.scrollBottom();
   }
   say(text) { this.addMessage('assistant',[{text, section:'none'}]); }
